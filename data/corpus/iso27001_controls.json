@@ -1,0 +1,492 @@
+[
+    {
+        "model": "compliance.Framework",
+        "pk": 1,
+        "fields": {
+            "name": "ISO 27001",
+            "version": "2022",
+            "description": "ISO/IEC 27001:2022 — Information security management systems. Annex A controls.",
+            "is_active": true
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.5.1",
+            "title": "Policies for information security",
+            "description": "A set of policies for information security shall be defined, approved by management, published, communicated to and acknowledged by relevant personnel and interested parties, and reviewed at planned intervals or if significant changes occur.",
+            "category": "Organizational Controls",
+            "keywords": ["policy", "governance", "management", "security policy", "documentation"],
+            "guidance": "Establish and maintain a comprehensive set of information security policies. Review annually or when significant changes occur."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.5.2",
+            "title": "Information security roles and responsibilities",
+            "description": "Information security roles and responsibilities shall be defined and allocated.",
+            "category": "Organizational Controls",
+            "keywords": ["roles", "responsibilities", "personnel", "accountability", "governance"],
+            "guidance": "Define clear information security roles. Assign accountability for security tasks and ensure responsibilities do not conflict."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.5.7",
+            "title": "Threat intelligence",
+            "description": "Information relating to information security threats shall be collected and analyzed to produce threat intelligence.",
+            "category": "Organizational Controls",
+            "keywords": ["threat intelligence", "vulnerability", "monitoring", "threat", "analysis"],
+            "guidance": "Collect and analyze threat data from internal and external sources. Integrate findings into the risk management process."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.5.10",
+            "title": "Acceptable use of information and other associated assets",
+            "description": "Rules for the acceptable use of information and other associated assets shall be identified, documented and implemented.",
+            "category": "Organizational Controls",
+            "keywords": ["acceptable use", "policy", "assets", "information handling", "rules"],
+            "guidance": "Document and communicate acceptable use rules for information assets. Include software, hardware, email, and internet usage."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.5.15",
+            "title": "Access control",
+            "description": "Rules to control physical and logical access to information and other associated assets shall be established and implemented based on business and information security requirements.",
+            "category": "Organizational Controls",
+            "keywords": ["access control", "authorization", "privilege", "access management", "permission"],
+            "guidance": "Implement access control policies based on the need-to-know principle and least privilege. Review access rights regularly."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.5.17",
+            "title": "Authentication information",
+            "description": "Allocation and management of authentication information shall be controlled by a management process including advising personnel of appropriate handling of authentication information.",
+            "category": "Organizational Controls",
+            "keywords": ["authentication", "password", "credentials", "login", "identity"],
+            "guidance": "Manage the full lifecycle of authentication credentials. Enforce complexity requirements, implement MFA where possible."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.5.23",
+            "title": "Information security for use of cloud services",
+            "description": "Processes for acquisition, use, management and exit from cloud services shall be established in accordance with the organization's information security requirements.",
+            "category": "Organizational Controls",
+            "keywords": ["cloud", "cloud security", "SaaS", "IaaS", "cloud services"],
+            "guidance": "Evaluate cloud service providers for security capabilities. Establish shared responsibility boundaries and exit procedures."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.5.24",
+            "title": "Information security incident management planning and preparation",
+            "description": "The organization shall plan and prepare for managing information security incidents by defining, establishing and communicating information security incident management processes, roles and responsibilities.",
+            "category": "Organizational Controls",
+            "keywords": ["incident", "incident response", "incident management", "security breach", "response plan"],
+            "guidance": "Establish incident response procedures with clear escalation paths. Define roles for incident handling and conduct regular drills."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.5.28",
+            "title": "Collection of evidence",
+            "description": "The organization shall establish and implement procedures for the identification, collection, acquisition and preservation of evidence related to information security events.",
+            "category": "Organizational Controls",
+            "keywords": ["evidence", "forensics", "logging", "audit trail", "preservation"],
+            "guidance": "Implement procedures for evidence collection compliant with legal requirements. Ensure chain of custody and integrity of evidence."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.5.29",
+            "title": "Information security during disruption",
+            "description": "The organization shall plan how to maintain information security at an appropriate level during disruption.",
+            "category": "Organizational Controls",
+            "keywords": ["continuity", "disruption", "disaster recovery", "resilience", "availability"],
+            "guidance": "Integrate information security into business continuity plans. Test recovery procedures and maintain security during failover."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.5.36",
+            "title": "Compliance with policies, rules and standards for information security",
+            "description": "Compliance with the organization's information security policy, topic-specific policies, rules and standards shall be regularly reviewed.",
+            "category": "Organizational Controls",
+            "keywords": ["compliance", "audit", "review", "standards", "assessment"],
+            "guidance": "Conduct regular compliance reviews and internal audits. Document findings and track remediation of non-conformities."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.6.3",
+            "title": "Information security awareness, education and training",
+            "description": "Personnel of the organization and relevant interested parties shall receive appropriate information security awareness, education and training and regular updates of the organization's information security policy.",
+            "category": "People Controls",
+            "keywords": ["training", "awareness", "education", "personnel", "security training"],
+            "guidance": "Provide role-based security training. Track completion and conduct periodic awareness campaigns."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.7.1",
+            "title": "Physical security perimeters",
+            "description": "Security perimeters shall be defined and used to protect areas that contain information and other associated assets.",
+            "category": "Physical Controls",
+            "keywords": ["physical security", "perimeter", "access control", "physical access", "facility"],
+            "guidance": "Define physical security perimeters with appropriate barriers and entry controls. Monitor and log physical access."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.7.4",
+            "title": "Physical security monitoring",
+            "description": "Premises shall be continuously monitored for unauthorized physical access.",
+            "category": "Physical Controls",
+            "keywords": ["monitoring", "surveillance", "physical monitoring", "CCTV", "intrusion detection"],
+            "guidance": "Implement monitoring of facilities with surveillance systems. Review logs and respond to unauthorized access attempts."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.1",
+            "title": "User endpoint devices",
+            "description": "Information stored on, processed by or accessible via user endpoint devices shall be protected.",
+            "category": "Technological Controls",
+            "keywords": ["endpoint", "device", "workstation", "laptop", "mobile device", "configuration"],
+            "guidance": "Secure all endpoint devices with encryption, up-to-date patches, and endpoint protection software. Enforce configuration baselines."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.2",
+            "title": "Privileged access rights",
+            "description": "The allocation and use of privileged access rights shall be restricted and managed.",
+            "category": "Technological Controls",
+            "keywords": ["privileged access", "admin", "root", "sudo", "privilege", "elevation"],
+            "guidance": "Restrict privileged access to the minimum needed. Use just-in-time access, log all privileged operations, and review regularly."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.3",
+            "title": "Information access restriction",
+            "description": "Access to information and other associated assets shall be restricted in accordance with the established topic-specific policy on access control.",
+            "category": "Technological Controls",
+            "keywords": ["access restriction", "need-to-know", "least privilege", "data access", "authorization"],
+            "guidance": "Restrict information access based on classification level and business need. Enforce across all systems and applications."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.5",
+            "title": "Secure authentication",
+            "description": "Secure authentication technologies and procedures shall be established and implemented based on information access restrictions and the topic-specific policy on access control.",
+            "category": "Technological Controls",
+            "keywords": ["authentication", "login", "MFA", "password", "credentials", "secure access", "multi-factor"],
+            "guidance": "Implement multi-factor authentication. Use strong password policies and account lockout mechanisms. Enforce session management."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.6",
+            "title": "Capacity management",
+            "description": "The use of resources shall be monitored and adjusted in line with current and expected capacity requirements.",
+            "category": "Technological Controls",
+            "keywords": ["capacity", "performance", "resource management", "availability", "monitoring"],
+            "guidance": "Monitor resource utilization (CPU, memory, storage, network). Set thresholds, plan capacity growth to prevent service disruptions."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.7",
+            "title": "Protection against malware",
+            "description": "Protection against malware shall be implemented and supported by appropriate user awareness.",
+            "category": "Technological Controls",
+            "keywords": ["malware", "antivirus", "anti-malware", "virus", "trojan", "ransomware", "protection"],
+            "guidance": "Deploy and maintain anti-malware solutions across all systems. Keep signatures updated and enable real-time protection."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.8",
+            "title": "Management of technical vulnerabilities",
+            "description": "Information about technical vulnerabilities of information systems in use shall be obtained, the organization's exposure to such vulnerabilities shall be evaluated and appropriate measures shall be taken.",
+            "category": "Technological Controls",
+            "keywords": ["vulnerability", "vulnerability management", "patch", "CVE", "scanning", "remediation", "update"],
+            "guidance": "Establish a vulnerability management program with regular scanning, prioritized remediation based on risk, and validation of patches."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.9",
+            "title": "Configuration management",
+            "description": "Configurations, including security configurations, of hardware, software, services and networks shall be established, documented, implemented, monitored and reviewed.",
+            "category": "Technological Controls",
+            "keywords": ["configuration", "hardening", "baseline", "configuration management", "secure configuration", "default"],
+            "guidance": "Establish and enforce secure configuration baselines. Disable unnecessary services, change default credentials, review configurations regularly."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.10",
+            "title": "Information deletion",
+            "description": "Information stored in information systems, devices or in any other storage media shall be deleted when no longer required.",
+            "category": "Technological Controls",
+            "keywords": ["deletion", "data retention", "disposal", "sanitization", "data destruction"],
+            "guidance": "Implement data retention policies and securely delete information when no longer needed. Use approved sanitization methods."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.12",
+            "title": "Data leakage prevention",
+            "description": "Data leakage prevention measures shall be applied to systems, networks and any other devices that process, store or transmit sensitive information.",
+            "category": "Technological Controls",
+            "keywords": ["data leakage", "DLP", "data loss prevention", "exfiltration", "data protection", "privacy"],
+            "guidance": "Deploy DLP solutions to monitor and prevent unauthorized data transfers. Classify data and apply controls based on sensitivity."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.15",
+            "title": "Logging",
+            "description": "Logs that record activities, exceptions, faults and other relevant events shall be produced, stored, protected and analyzed.",
+            "category": "Technological Controls",
+            "keywords": ["logging", "log", "audit trail", "event log", "syslog", "monitoring", "audit"],
+            "guidance": "Enable comprehensive logging across systems. Protect logs from tampering, retain for the required period, and review regularly."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.16",
+            "title": "Monitoring activities",
+            "description": "Networks, systems and applications shall be monitored for anomalous behavior and appropriate actions taken to evaluate potential information security incidents.",
+            "category": "Technological Controls",
+            "keywords": ["monitoring", "detection", "SIEM", "anomaly", "intrusion detection", "alerting"],
+            "guidance": "Monitor systems and networks for anomalous behavior. Use SIEM tools for correlation and alerting. Investigate anomalies promptly."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.20",
+            "title": "Networks security",
+            "description": "Networks and network devices shall be secured, managed and controlled to protect information in systems and applications.",
+            "category": "Technological Controls",
+            "keywords": ["network", "network security", "firewall", "IDS", "IPS", "network device", "router", "switch"],
+            "guidance": "Secure network infrastructure with firewalls, IDS/IPS, and access controls. Regularly review and update network configurations."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.21",
+            "title": "Security of network services",
+            "description": "Security mechanisms, service levels and service requirements of network services shall be identified, implemented and monitored.",
+            "category": "Technological Controls",
+            "keywords": ["network services", "service security", "SLA", "network management", "service monitoring"],
+            "guidance": "Define security requirements for all network services. Include in service agreements and monitor compliance continuously."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.22",
+            "title": "Segregation of networks",
+            "description": "Groups of information services, users and information systems shall be segregated in the organization's networks.",
+            "category": "Technological Controls",
+            "keywords": ["segregation", "segmentation", "VLAN", "network isolation", "zone", "DMZ"],
+            "guidance": "Segment networks based on trust levels and data sensitivity. Implement controls between segments and monitor inter-segment traffic."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.23",
+            "title": "Web filtering",
+            "description": "Access to external websites shall be managed to reduce exposure to malicious content.",
+            "category": "Technological Controls",
+            "keywords": ["web filtering", "URL filtering", "web security", "proxy", "content filtering"],
+            "guidance": "Implement web filtering to block access to known malicious or inappropriate websites. Log and review filtered requests."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.24",
+            "title": "Use of cryptography",
+            "description": "Rules for the effective use of cryptography, including cryptographic key management, shall be defined and implemented.",
+            "category": "Technological Controls",
+            "keywords": ["cryptography", "encryption", "TLS", "SSL", "certificate", "key management", "cipher", "PKI"],
+            "guidance": "Use strong, current cryptographic algorithms. Manage certificate lifecycles and cryptographic keys properly. Disable weak ciphers."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.25",
+            "title": "Secure development life cycle",
+            "description": "Rules for the secure development of software and systems shall be established and applied.",
+            "category": "Technological Controls",
+            "keywords": ["secure development", "SDLC", "secure coding", "development", "software security"],
+            "guidance": "Integrate security into all phases of the SDLC. Conduct security reviews, code analysis, and testing before deployment."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.26",
+            "title": "Application security requirements",
+            "description": "Information security requirements shall be identified, specified and approved when developing or acquiring applications.",
+            "category": "Technological Controls",
+            "keywords": ["application security", "security requirements", "OWASP", "web application", "input validation"],
+            "guidance": "Define security requirements for all applications. Include input validation, output encoding, session management, and error handling."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.28",
+            "title": "Secure coding",
+            "description": "Secure coding principles shall be applied to software development.",
+            "category": "Technological Controls",
+            "keywords": ["secure coding", "code review", "injection", "XSS", "CSRF", "SQL injection", "coding standards"],
+            "guidance": "Follow secure coding standards (OWASP). Conduct code reviews, static analysis, and validate all inputs. Prevent common vulnerabilities."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.5.30",
+            "title": "ICT readiness for business continuity",
+            "description": "ICT readiness shall be planned, implemented, maintained and tested based on business continuity objectives and ICT continuity requirements.",
+            "category": "Organizational Controls",
+            "keywords": ["business continuity", "ICT", "disaster recovery", "resilience", "backup", "recovery"],
+            "guidance": "Plan ICT recovery strategies for business-critical systems. Test recovery procedures regularly and document RTOs and RPOs."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.5.9",
+            "title": "Inventory of information and other associated assets",
+            "description": "An inventory of information and other associated assets, including owners, shall be developed and maintained.",
+            "category": "Organizational Controls",
+            "keywords": ["inventory", "asset management", "asset register", "ownership", "classification"],
+            "guidance": "Maintain a current inventory of all information assets. Assign owners and classify assets based on sensitivity and criticality."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.4",
+            "title": "Access to source code",
+            "description": "Read and write access to source code, development tools and software libraries shall be appropriately managed.",
+            "category": "Technological Controls",
+            "keywords": ["source code", "repository", "git", "access control", "development", "code protection"],
+            "guidance": "Restrict source code access to authorized developers. Use version control with access controls and audit trails."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.11",
+            "title": "Data masking",
+            "description": "Data masking shall be used in accordance with the organization's topic-specific policy on access control and other related topic-specific policies, and business requirements, taking applicable legislation into consideration.",
+            "category": "Technological Controls",
+            "keywords": ["data masking", "anonymization", "pseudonymization", "privacy", "PII", "data protection"],
+            "guidance": "Apply data masking in non-production environments and when sharing data. Use appropriate techniques based on data sensitivity."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.13",
+            "title": "Information backup",
+            "description": "Backup copies of information, software and systems shall be maintained and regularly tested in accordance with the agreed topic-specific policy on backup.",
+            "category": "Technological Controls",
+            "keywords": ["backup", "restore", "recovery", "data backup", "business continuity"],
+            "guidance": "Implement regular backup procedures for critical data and systems. Test restores periodically and store backups securely."
+        }
+    },
+    {
+        "model": "compliance.FrameworkControl",
+        "fields": {
+            "framework": 1,
+            "control_id": "A.8.14",
+            "title": "Redundancy of information processing facilities",
+            "description": "Information processing facilities shall be implemented with redundancy sufficient to meet availability requirements.",
+            "category": "Technological Controls",
+            "keywords": ["redundancy", "high availability", "failover", "clustering", "availability"],
+            "guidance": "Implement redundancy for critical systems based on availability requirements. Test failover mechanisms regularly."
+        }
+    }
+]

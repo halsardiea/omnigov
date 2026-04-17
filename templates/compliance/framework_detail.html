@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ framework.name }} {{ framework.version }} — OmniGov{% endblock %}
+
+{% block content %}
+<header class="border-b border-white/10 bg-[#08111f]/90">
+    <div class="flex items-center justify-between px-6 py-5">
+        <div>
+            <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">{{ framework.name }}:{{ framework.version }}</p>
+            <h1 class="mt-3 text-4xl font-semibold tracking-tight">Framework Controls</h1>
+        </div>
+        <a href="{% url 'compliance:framework-list' %}" class="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white transition hover:bg-white/[0.08]">Back to frameworks</a>
+    </div>
+</header>
+
+<main class="flex-1 px-6 py-8">
+    <section class="overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.04]">
+        <table class="min-w-full divide-y divide-white/10">
+            <thead class="bg-white/[0.02] text-left text-xs uppercase tracking-[0.2em] text-[#9ab0d0]">
+                <tr>
+                    <th class="px-6 py-4">Control ID</th>
+                    <th class="px-6 py-4">Title</th>
+                    <th class="px-6 py-4">Category</th>
+                    <th class="px-6 py-4">Description</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/10 text-sm text-[#c9d5e7]">
+                {% for control in controls %}
+                <tr class="transition hover:bg-white/[0.03]">
+                    <td class="px-6 py-4 font-mono text-white">{{ control.control_id }}</td>
+                    <td class="px-6 py-4 font-medium text-white">{{ control.title }}</td>
+                    <td class="px-6 py-4">{{ control.category }}</td>
+                    <td class="px-6 py-4">{{ control.description|truncatechars:120 }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="px-6 py-8 text-center text-[#9ab0d0]">No controls loaded for this framework.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+{% endblock %}

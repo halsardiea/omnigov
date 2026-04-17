@@ -1,0 +1,69 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+eggs/
+*.egg
+
+# Virtual Environment
+.venv/
+.venv-linux/
+venv/
+ENV/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media/
+/staticfiles/
+
+# Environment
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+gvm_data/
+postgres_data/
+
+# Node (TailwindCSS builds)
+node_modules/
+
+# Reports output
+/media/reports/
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+
+# Not part of source
+GP1.docx
+OMNIGOV_BLUEPRINT.md
+FRONTEND_HANDOFF.md
+server.log
+
+# Old frontend files (already integrated into templates)
+/frontend/
+/frontendghaziteezi/
+
+# Pytest cache
+.pytest_cache/
+
+# GitHub agents
+.github/

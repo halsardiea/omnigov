@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}New Scan — OmniGov{% endblock %}
+
+{% block content %}
+<header class="border-b border-white/10 bg-[#08111f]/90">
+    <div class="flex items-center justify-between px-6 py-5">
+        <div>
+            <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Create Scan</p>
+            <h1 class="mt-3 text-4xl font-semibold tracking-tight">New Scan</h1>
+        </div>
+        <a href="{% url 'scanner:scan-list' %}" class="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white transition hover:bg-white/[0.08]">Back to scans</a>
+    </div>
+</header>
+
+<main class="flex-1 px-6 py-8">
+    <div class="grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
+        <section class="rounded-[30px] border border-white/10 bg-white/[0.04] p-8">
+            <form method="post">
+                {% csrf_token %}
+                <div class="grid gap-5 md:grid-cols-2">
+                    <div class="md:col-span-2">
+                        <label for="id_name" class="mb-2 block text-sm font-medium text-white">Scan name</label>
+                        <input type="text" name="name" id="id_name" value="{{ form.name.value|default:'' }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20" placeholder="Scan name">
+                        {% if form.name.errors %}<p class="mt-1 text-xs text-red-300">{{ form.name.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="id_target" class="mb-2 block text-sm font-medium text-white">Target IP or CIDR</label>
+                        <input type="text" name="target" id="id_target" value="{{ form.target.value|default:'' }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 font-mono text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20" placeholder="e.g. 192.168.1.0/24">
+                        {% if form.target.errors %}<p class="mt-1 text-xs text-red-300">{{ form.target.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label for="id_framework" class="mb-2 block text-sm font-medium text-white">Framework</label>
+                        <select name="framework" id="id_framework" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20">
+                            {% for value, label in form.framework.field.choices %}
+                            <option value="{{ value }}" {% if form.framework.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if form.framework.errors %}<p class="mt-1 text-xs text-red-300">{{ form.framework.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label for="id_scan_config" class="mb-2 block text-sm font-medium text-white">Scan Config</label>
+                        <select name="scan_config" id="id_scan_config" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20">
+                            {% for value, label in form.scan_config.field.choices %}
+                            <option value="{{ value }}" {% if form.scan_config.value == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-8 flex gap-3">
+                    <button type="submit" class="rounded-2xl bg-[#d7ff68] px-5 py-3 font-semibold text-slate-950 shadow-[0_14px_34px_rgba(215,255,104,0.25)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#e7ff95] active:scale-[0.98]">Start scan</button>
+                    <a href="{% url 'scanner:scan-list' %}" class="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3 font-medium text-white transition duration-200 hover:-translate-y-0.5 hover:bg-white/[0.08] active:scale-[0.98]">Cancel</a>
+                </div>
+            </form>
+        </section>
+        <aside class="space-y-6">
+            <div class="rounded-[30px] border border-white/10 bg-white/[0.04] p-6">
+                <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Launch notes</p>
+                <ul class="mt-4 space-y-3 text-sm leading-6 text-[#c9d5e7]">
+                    <li>Targets are validated against approved network ranges before submission.</li>
+                    <li>Progress is streamed back to the detail screen during scan execution.</li>
+                    <li>After completion, findings are parsed and mapped to the selected framework.</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — OmniGov{% endblock %}
+
+{% block content %}
+<header class="border-b border-white/10 bg-[#08111f]/90 backdrop-blur">
+    <div class="flex items-center justify-between px-6 py-5">
+        <div>
+            <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Operations Overview</p>
+            <h1 class="mt-3 text-4xl font-semibold tracking-tight text-white">Dashboard</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="{% url 'scanner:scan-create' %}" class="rounded-2xl bg-[#d7ff68] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_34px_rgba(215,255,104,0.25)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#e7ff95] active:scale-[0.98]">New scan</a>
+        </div>
+    </div>
+</header>
+
+<main class="flex-1 px-6 py-8">
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-6">
+            <p class="text-sm text-[#9ab0d0]">Total Scans</p>
+            <p class="mt-4 text-4xl font-semibold text-white">{{ total_scans }}</p>
+        </div>
+        <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-6">
+            <p class="text-sm text-[#9ab0d0]">Active Scans</p>
+            <p class="mt-4 text-4xl font-semibold text-white">{{ active_scans }}</p>
+            {% if active_scans > 0 %}<p class="mt-2 text-xs uppercase tracking-[0.2em] text-amber-300">In progress</p>{% endif %}
+        </div>
+        <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-6">
+            <p class="text-sm text-[#9ab0d0]">Total Findings</p>
+            <p class="mt-4 text-4xl font-semibold text-white">{{ total_findings }}</p>
+            <p class="mt-2 text-xs uppercase tracking-[0.2em] text-[#9ab0d0]">Across all scans</p>
+        </div>
+        <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-6">
+            <p class="text-sm text-[#9ab0d0]">High Severity</p>
+            <p class="mt-4 text-4xl font-semibold text-white">{{ high_findings }}</p>
+            {% if high_findings > 0 %}<p class="mt-2 text-xs uppercase tracking-[0.2em] text-red-300">Immediate action</p>{% endif %}
+        </div>
+    </div>
+
+    <div class="mt-8 grid gap-8 xl:grid-cols-[1.45fr_0.95fr]">
+        <section class="rounded-[30px] border border-white/10 bg-white/[0.04]">
+            <div class="flex items-center justify-between border-b border-white/10 px-6 py-5">
+                <h2 class="text-xl font-semibold text-white">Recent Scans</h2>
+                <a href="{% url 'scanner:scan-list' %}" class="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm text-white transition hover:bg-white/[0.08]">View all</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-white/10">
+                    <thead class="bg-white/[0.02] text-left text-xs uppercase tracking-[0.2em] text-[#9ab0d0]">
+                        <tr><th class="px-6 py-4">Name</th><th class="px-6 py-4">Target</th><th class="px-6 py-4">Framework</th><th class="px-6 py-4">Status</th><th class="px-6 py-4">Created</th></tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/10 text-sm text-[#c9d5e7]">
+                        {% for scan in recent_scans %}
+                        <tr class="transition hover:bg-white/[0.03]">
+                            <td class="px-6 py-4"><a href="{% url 'scanner:scan-detail' scan.pk %}" class="font-medium text-white transition hover:text-[#d7ff68]">{{ scan.name }}</a></td>
+                            <td class="px-6 py-4 font-mono">{{ scan.target }}</td>
+                            <td class="px-6 py-4">{{ scan.framework.name }}</td>
+                            <td class="px-6 py-4">
+                                <span class="rounded-full border px-3 py-1 text-xs font-semibold
+                                    {% if scan.status == 'analyzed' or scan.status == 'completed' %}border-green-400/20 bg-green-400/10 text-green-300
+                                    {% elif scan.status == 'running' or scan.status == 'analyzing' %}border-amber-400/20 bg-amber-400/10 text-amber-300
+                                    {% elif scan.status == 'failed' %}border-red-400/20 bg-red-400/10 text-red-300
+                                    {% else %}border-slate-400/20 bg-slate-400/10 text-slate-300{% endif %}">
+                                    {{ scan.get_status_display }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">{{ scan.created_at|date:"M d, H:i" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="px-6 py-8 text-center text-[#9ab0d0]">No scans yet. Start your first scan above.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="space-y-6">
+            <div class="rounded-[30px] border border-white/10 bg-white/[0.04] p-6">
+                <h2 class="text-xl font-semibold text-white">Recent Reports</h2>
+                <div class="mt-5 space-y-4">
+                    {% for report in recent_reports %}
+                    <div class="rounded-2xl border border-white/10 bg-[#0c1628] p-4">
+                        <p class="font-medium text-white">{{ report.get_report_type_display }} ({{ report.get_format_display }})</p>
+                        <p class="mt-1 text-sm text-[#9ab0d0]">{{ report.scan_task.name }}</p>
+                        {% if report.compliance_score %}<p class="mt-2 text-xs uppercase tracking-[0.18em] text-[#d7ff68]">Compliance score {{ report.compliance_score|floatformat:0 }}%</p>{% endif %}
+                    </div>
+                    {% empty %}
+                    <p class="text-sm text-[#9ab0d0]">No reports generated yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="rounded-[30px] border border-white/10 bg-white/[0.04] p-6">
+                <h2 class="text-xl font-semibold text-white">Priority Issues</h2>
+                <div class="mt-5 space-y-3">
+                    {% if high_findings > 0 %}
+                    <div class="rounded-2xl border border-red-400/20 bg-red-400/10 p-4 text-sm text-red-100">{{ high_findings }} high-severity finding{{ high_findings|pluralize }} remain{{ high_findings|pluralize:"s," }} open across your scans.</div>
+                    {% endif %}
+                    {% if active_scans > 0 %}
+                    <div class="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-100">{{ active_scans }} scan{{ active_scans|pluralize }} {{ active_scans|pluralize:"is,are" }} still in progress.</div>
+                    {% endif %}
+                    {% if high_findings == 0 and active_scans == 0 %}
+                    <div class="rounded-2xl border border-green-400/20 bg-green-400/10 p-4 text-sm text-green-100">No priority issues at this time.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+{% endblock %}

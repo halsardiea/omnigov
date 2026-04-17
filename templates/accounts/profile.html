@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Profile — OmniGov{% endblock %}
+
+{% block content %}
+<header class="border-b border-white/10 bg-[#08111f]/90">
+    <div class="flex items-center justify-between px-6 py-5">
+        <div>
+            <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Profile</p>
+            <h1 class="mt-3 text-4xl font-semibold tracking-tight">Account Details</h1>
+        </div>
+        <a href="{% url 'dashboard:home' %}" class="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white transition hover:bg-white/[0.08]">Back to dashboard</a>
+    </div>
+</header>
+
+<main class="flex-1 px-6 py-8">
+    <div class="grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
+        <section class="rounded-[30px] border border-white/10 bg-white/[0.04] p-8">
+            <form method="post">
+                {% csrf_token %}
+                <div class="grid gap-5 md:grid-cols-2">
+                    <div>
+                        <label for="id_first_name" class="mb-2 block text-sm font-medium text-white">First name</label>
+                        <input type="text" name="first_name" id="id_first_name" value="{{ form.first_name.value|default:'' }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20">
+                        {% if form.first_name.errors %}<p class="mt-1 text-xs text-red-300">{{ form.first_name.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label for="id_last_name" class="mb-2 block text-sm font-medium text-white">Last name</label>
+                        <input type="text" name="last_name" id="id_last_name" value="{{ form.last_name.value|default:'' }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20">
+                        {% if form.last_name.errors %}<p class="mt-1 text-xs text-red-300">{{ form.last_name.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="id_email" class="mb-2 block text-sm font-medium text-white">Email address</label>
+                        <input type="email" name="email" id="id_email" value="{{ form.email.value|default:'' }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-[#9ab0d0] outline-none" readonly>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="mb-2 block text-sm font-medium text-white">Role</label>
+                        <input type="text" value="{{ user.get_role_display }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-[#9ab0d0] outline-none" readonly>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <button type="submit" class="rounded-2xl bg-[#d7ff68] px-5 py-3 font-semibold text-slate-950 shadow-[0_14px_34px_rgba(215,255,104,0.25)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#e7ff95] active:scale-[0.98]">Save profile</button>
+                </div>
+            </form>
+        </section>
+        <aside class="space-y-6">
+            <div class="rounded-[30px] border border-white/10 bg-white/[0.04] p-6">
+                <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Security Status</p>
+                <div class="mt-4 space-y-3 text-sm">
+                    <div class="rounded-2xl border border-green-400/20 bg-green-400/10 p-4 text-green-100">Last sign-in: {{ user.last_login|date:"M d, Y H:i"|default:"Never" }}</div>
+                    <div class="rounded-2xl border border-white/10 bg-[#0c1628] p-4 text-[#c9d5e7]">Role: {{ user.get_role_display }} — Member since {{ user.date_joined|date:"M d, Y" }}</div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</main>
+{% endblock %}

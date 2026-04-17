@@ -1,0 +1,36 @@
+{% load static %}
+<aside class="hidden w-22 shrink-0 border-r border-white/10 bg-[#0a1423] lg:flex lg:flex-col">
+    <div class="flex items-center justify-center border-b border-white/10 px-4 py-4">
+        <a href="{% url 'dashboard:home' %}"><img src="{% static 'images/OmniGov_logo.png' %}" alt="OmniGov" class="w-60 h-auto"></a>
+    </div>
+    <nav class="flex-1 space-y-1.5 px-3 py-4">
+        <a href="{% url 'dashboard:home' %}" class="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium {% if request.resolver_match.app_name == 'dashboard' %}border border-[#d7ff68]/20 bg-[#d7ff68]/10 text-white{% else %}text-[#9ab0d0] transition hover:bg-white/[0.05] hover:text-white{% endif %}">
+            <svg class="h-5 w-5{% if request.resolver_match.app_name == 'dashboard' %} text-[#d7ff68]{% endif %}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12.75 12 4.5l8.25 8.25M5.25 11.25v8.25h13.5v-8.25"/></svg>
+            Dashboard
+        </a>
+        <a href="{% url 'scanner:scan-list' %}" class="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium {% if request.resolver_match.app_name == 'scanner' %}border border-[#d7ff68]/20 bg-[#d7ff68]/10 text-white{% else %}text-[#9ab0d0] transition hover:bg-white/[0.05] hover:text-white{% endif %}">
+            <svg class="h-5 w-5{% if request.resolver_match.app_name == 'scanner' %} text-[#d7ff68]{% endif %}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+            Scans
+        </a>
+        <a href="{% url 'compliance:framework-list' %}" class="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium {% if request.resolver_match.app_name == 'compliance' %}border border-[#d7ff68]/20 bg-[#d7ff68]/10 text-white{% else %}text-[#9ab0d0] transition hover:bg-white/[0.05] hover:text-white{% endif %}">
+            <svg class="h-5 w-5{% if request.resolver_match.app_name == 'compliance' %} text-[#d7ff68]{% endif %}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m5.25 2.25a8.25 8.25 0 1 1-16.5 0 8.25 8.25 0 0 1 16.5 0Z"/></svg>
+            Compliance
+        </a>
+        <a href="{% url 'reports:report-list' %}" class="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium {% if request.resolver_match.app_name == 'reports' %}border border-[#d7ff68]/20 bg-[#d7ff68]/10 text-white{% else %}text-[#9ab0d0] transition hover:bg-white/[0.05] hover:text-white{% endif %}">
+            <svg class="h-5 w-5{% if request.resolver_match.app_name == 'reports' %} text-[#d7ff68]{% endif %}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 3.75h6l4.5 4.5v10.5A1.5 1.5 0 0 1 16.5 20.25h-9A1.5 1.5 0 0 1 6 18.75v-13.5A1.5 1.5 0 0 1 7.5 3.75Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 3.75v4.5H18"/></svg>
+            Reports
+        </a>
+        <a href="{% url 'accounts:profile' %}" class="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium {% if request.resolver_match.url_name == 'profile' %}border border-[#d7ff68]/20 bg-[#d7ff68]/10 text-white{% else %}text-[#9ab0d0] transition hover:bg-white/[0.05] hover:text-white{% endif %}">
+            <svg class="h-5 w-5{% if request.resolver_match.url_name == 'profile' %} text-[#d7ff68]{% endif %}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6.75a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 19.125a7.5 7.5 0 0 1 15 0"/></svg>
+            Profile
+        </a>
+    </nav>
+    <div class="border-t border-white/10 p-3">
+        <div class="rounded-[20px] border border-white/10 bg-white/[0.04] p-3">
+            <p class="text-[10px] uppercase tracking-[0.22em] text-[#9ab0d0]">Current session</p>
+            <p class="mt-1.5 truncate text-sm font-semibold text-white">{{ user.get_full_name|default:user.email }}</p>
+            <p class="mt-0.5 truncate text-xs text-[#9ab0d0]">{{ user.email }}</p>
+            <a href="{% url 'accounts:logout' %}" class="mt-2.5 block rounded-xl border border-white/10 bg-white/[0.04] px-3 py-1.5 text-center text-xs text-[#9ab0d0] transition hover:bg-white/[0.08] hover:text-white">Sign out</a>
+        </div>
+    </div>
+</aside>

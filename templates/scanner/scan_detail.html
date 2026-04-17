@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}{{ scan.name }} — OmniGov{% endblock %}
+
+{% block content %}
+<header class="border-b border-white/10 bg-[#08111f]/90">
+    <div class="flex items-center justify-between px-6 py-5">
+        <div>
+            <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Scan Detail</p>
+            <h1 class="mt-3 text-4xl font-semibold tracking-tight">{{ scan.name }}</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]
+                {% if scan.status == 'analyzed' or scan.status == 'completed' %}border-green-400/20 bg-green-400/10 text-green-300
+                {% elif scan.status == 'running' or scan.status == 'analyzing' %}border-amber-400/20 bg-amber-400/10 text-amber-300
+                {% elif scan.status == 'failed' %}border-red-400/20 bg-red-400/10 text-red-300
+                {% else %}border-slate-400/20 bg-slate-400/10 text-slate-300{% endif %}">
+                {{ scan.get_status_display }}
+            </span>
+            {% if scan.status == 'running' %}
+            <form method="post" action="{% url 'scanner:scan-stop' scan.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm font-medium text-red-100 transition hover:bg-red-400/15">Stop scan</button>
+            </form>
+            {% endif %}
+            <a href="{% url 'scanner:scan-list' %}" class="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white transition hover:bg-white/[0.08]">Back to scans</a>
+        </div>
+    </div>
+</header>
+
+<main class="flex-1 px-6 py-8">
+    <div class="grid gap-6 xl:grid-cols-4">
+        <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
+            <p class="text-sm text-[#9ab0d0]">Created</p>
+            <p class="mt-3 text-xl font-semibold">{{ scan.created_at|date:"M d, Y H:i" }}</p>
+        </div>
+        <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
+            <p class="text-sm text-[#9ab0d0]">Progress</p>
+            <p class="mt-3 text-xl font-semibold" id="progress-pct">{{ scan.progress|default:"0" }}%</p>
+        </div>
+        <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
+            <p class="text-sm text-[#9ab0d0]">Findings</p>
+            <p class="mt-3 text-xl font-semibold">{{ scan.findings_count }} Parsed</p>
+        </div>
+        <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
+            <p class="text-sm text-[#9ab0d0]">Reports</p>
+            <p class="mt-3 text-xl font-semibold">{{ scan.reports.count }} Ready</p>
+        </div>
+    </div>
+
+    {% if scan.status == 'running' or scan.status == 'analyzing' %}
+    <section class="mt-6 rounded-[30px] border border-white/10 bg-white/[0.04] p-6" id="scan-progress-container">
+        <div class="flex items-center justify-between">
+            <p class="text-sm font-medium text-white" id="progress-label">
+                {% if scan.status == 'running' %}Scanning in progress...{% else %}AI analysis in progress...{% endif %}
+            </p>
+            <p class="text-sm text-[#9ab0d0]" id="progress-pct-bar">{{ scan.progress|default:"0" }}%</p>
+        </div>
+        <div class="mt-4 h-3 rounded-full bg-white/10">
+            <div class="h-3 rounded-full bg-[#d7ff68] shadow-[0_0_24px_rgba(215,255,104,0.4)] transition-all duration-500" id="progress-bar" style="width: {{ scan.progress|default:'0' }}%"></div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if scan.error_message %}
+    <section class="mt-6 rounded-[30px] border border-red-400/20 bg-red-400/10 p-6">
+        <p class="text-sm font-medium text-red-100">Error: {{ scan.error_message }}</p>
+    </section>
+    {% endif %}
+
+    {% if findings %}
+    <section class="mt-6 overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.04]">
+        <div class="border-b border-white/10 px-6 py-5">
+            <h2 class="text-xl font-semibold">Findings ({{ findings|length }})</h2>
+        </div>
+        <table class="min-w-full divide-y divide-white/10">
+            <thead class="bg-white/[0.02] text-left text-xs uppercase tracking-[0.2em] text-[#9ab0d0]">
+                <tr>
+                    <th class="px-6 py-4">Finding</th>
+                    <th class="px-6 py-4">Severity</th>
+                    <th class="px-6 py-4">CVSS</th>
+                    <th class="px-6 py-4">Host</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/10 text-sm text-[#c9d5e7]">
+                {% for finding in findings %}
+                <tr class="transition hover:bg-white/[0.03]">
+                    <td class="px-6 py-4">
+                        <p class="font-medium text-white">{{ finding.name|truncatechars:80 }}</p>
+                        {% if finding.cve_ids %}<p class="mt-1 font-mono text-xs text-[#9ab0d0]">{{ finding.cve_ids|join:", " }}</p>{% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="rounded-full border px-3 py-1 text-xs font-semibold
+                            {% if finding.severity == 'Critical' %}border-purple-400/20 bg-purple-400/10 text-purple-300
+                            {% elif finding.severity == 'High' %}border-red-400/20 bg-red-400/10 text-red-300
+                            {% elif finding.severity == 'Medium' %}border-amber-400/20 bg-amber-400/10 text-amber-300
+                            {% elif finding.severity == 'Low' %}border-blue-400/20 bg-blue-400/10 text-blue-300
+                            {% else %}border-slate-400/20 bg-slate-400/10 text-slate-300{% endif %}">
+                            {{ finding.severity }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">{{ finding.cvss_score|default:"—" }}</td>
+                    <td class="px-6 py-4 font-mono">{{ finding.host }}{% if finding.port %}:{{ finding.port }}{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    {% endif %}
+</main>
+{% endblock %}
+
+{% if scan.status == 'running' or scan.status == 'analyzing' %}
+{% block extra_js %}
+<script>
+    const scanId = {{ scan.pk }};
+    const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const ws = new WebSocket(`${wsScheme}://${window.location.host}/ws/scan/${scanId}/`);
+
+    ws.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        const progressBar = document.getElementById('progress-bar');
+        const progressPct = document.getElementById('progress-pct');
+        const progressPctBar = document.getElementById('progress-pct-bar');
+        const progressLabel = document.getElementById('progress-label');
+
+        if (data.progress !== undefined) {
+            if (progressBar) progressBar.style.width = data.progress + '%';
+            if (progressPct) progressPct.textContent = data.progress + '%';
+            if (progressPctBar) progressPctBar.textContent = data.progress + '%';
+        }
+        if (data.message && progressLabel) {
+            progressLabel.textContent = data.message;
+        }
+        if (data.status === 'analyzed' || data.status === 'completed' || data.status === 'failed') {
+            setTimeout(() => window.location.reload(), 1500);
+        }
+    };
+
+    ws.onerror = function() {
+        console.log('WebSocket error — falling back to polling');
+        setInterval(() => window.location.reload(), 15000);
+    };
+</script>
+{% endblock %}
+{% endif %}

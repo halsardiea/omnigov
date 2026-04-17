@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Executive Compliance Report — {{ scan_task.name }}</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11pt; color: #1a1a2e; margin: 40px; }
+        h1 { color: #312e81; border-bottom: 3px solid #312e81; padding-bottom: 10px; }
+        h2 { color: #4338ca; margin-top: 30px; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 { font-size: 24pt; }
+        .meta { color: #666; font-size: 9pt; }
+        .score-box { background: #f0f0ff; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0; }
+        .score-value { font-size: 48pt; font-weight: bold; color: {% if compliance_score >= 80 %}#059669{% elif compliance_score >= 50 %}#d97706{% else %}#dc2626{% endif %}; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th { background: #312e81; color: white; padding: 8px 12px; text-align: left; font-size: 9pt; }
+        td { padding: 8px 12px; border-bottom: 1px solid #e0e0e0; font-size: 9pt; }
+        tr:nth-child(even) { background: #f9f9ff; }
+        .severity-high { color: #dc2626; font-weight: bold; }
+        .severity-medium { color: #d97706; font-weight: bold; }
+        .severity-low { color: #2563eb; }
+        .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 8pt; color: #999; text-align: center; }
+        .page-break { page-break-before: always; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>OmniGov — Executive Compliance Report</h1>
+        <div class="meta">
+            <p>Scan: {{ scan_task.name }} &mdash; Target: {{ scan_task.target }}</p>
+            <p>Framework: {{ framework.name }} {{ framework.version }}</p>
+            <p>Generated: {{ generated_at|date:"F d, Y H:i" }}</p>
+        </div>
+    </div>
+
+    <div class="score-box">
+        <div style="font-size: 14pt; color: #666;">Compliance Score</div>
+        <div class="score-value">{{ compliance_score }}%</div>
+        <div style="color: #666;">{{ passing_count }} passing / {{ failing_count }} non-compliant of {{ total_findings }} findings</div>
+    </div>
+
+    <h2>Severity Distribution</h2>
+    <table>
+        <tr><th>Severity</th><th>Count</th></tr>
+        {% for sev, count in severity_counts.items %}
+        <tr>
+            <td class="severity-{{ sev|lower }}">{{ sev }}</td>
+            <td>{{ count }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Findings Overview</h2>
+    <table>
+        <tr>
+            <th>Finding</th>
+            <th>Severity</th>
+            <th>CVSS</th>
+            <th>Compliance</th>
+            <th>Executive Summary</th>
+        </tr>
+        {% for finding in findings %}
+        <tr>
+            <td>{{ finding.name|truncatechars:60 }}</td>
+            <td class="severity-{{ finding.severity|lower }}">{{ finding.severity }}</td>
+            <td>{{ finding.cvss_score|default:"—" }}</td>
+            <td style="color:#9ca3af; font-style:italic;">AI pending</td>
+            <td style="color:#9ca3af; font-style:italic;">—</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="footer">
+        OmniGov Compliance Intelligence Platform &mdash; Princess Sumaya University for Technology &mdash; Confidential
+    </div>
+</body>
+</html>

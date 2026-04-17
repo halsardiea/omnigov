@@ -1,0 +1,28 @@
+# ==========================================================
+# OmniGov — LOCAL DEVELOPMENT Docker Compose
+# Only runs: PostgreSQL + Redis (lightweight services)
+# Django, Celery run NATIVELY on your machine for fast dev
+# ==========================================================
+# Usage: docker compose -f docker-compose.dev.yml up -d
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: omnigov
+      POSTGRES_USER: omnigov
+      POSTGRES_PASSWORD: omnigov_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

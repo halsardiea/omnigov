@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Technical Assessment Report — {{ scan_task.name }}</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10pt; color: #1a1a2e; margin: 30px; }
+        h1 { color: #312e81; border-bottom: 3px solid #312e81; padding-bottom: 10px; }
+        h2 { color: #4338ca; margin-top: 30px; }
+        h3 { color: #1e1b4b; margin-top: 15px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .meta { color: #666; font-size: 9pt; }
+        .finding { border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin: 12px 0; page-break-inside: avoid; }
+        .finding-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .severity-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-weight: bold; font-size: 9pt; }
+        .sev-high { background: #fee2e2; color: #dc2626; }
+        .sev-medium { background: #fef3c7; color: #d97706; }
+        .sev-low { background: #dbeafe; color: #2563eb; }
+        .field-label { font-weight: bold; color: #4338ca; font-size: 9pt; }
+        .remediation { background: #f0fdf4; border-left: 4px solid #059669; padding: 10px; margin: 8px 0; font-size: 9pt; }
+        .controls { background: #faf5ff; border-left: 4px solid #7c3aed; padding: 10px; margin: 8px 0; font-size: 9pt; }
+        .footer { margin-top: 30px; padding-top: 10px; border-top: 1px solid #ccc; font-size: 8pt; color: #999; text-align: center; }
+        .page-break { page-break-before: always; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>OmniGov — Technical Assessment Report</h1>
+        <div class="meta">
+            <p>Scan: {{ scan_task.name }} &mdash; Target: {{ scan_task.target }}</p>
+            <p>Framework: {{ framework.name }} {{ framework.version }}</p>
+            <p>Generated: {{ generated_at|date:"F d, Y H:i" }} &mdash; {{ total_findings }} findings ({{ high_findings }} high severity)</p>
+        </div>
+    </div>
+
+    {% for severity, findings in findings_by_severity.items %}
+    {% if findings %}
+    <h2>{{ severity }} Severity Findings ({{ findings|length }})</h2>
+    {% for finding in findings %}
+    <div class="finding">
+        <div>
+            <strong>{{ finding.name }}</strong>
+            <span class="severity-badge sev-{{ severity|lower }}">{{ severity }}</span>
+            {% if finding.cvss_score %}<span style="margin-left: 8px; font-size: 9pt; color: #666;">CVSS: {{ finding.cvss_score }}</span>{% endif %}
+        </div>
+
+        <p style="font-size: 9pt; color: #666; margin: 5px 0;">
+            Host: {{ finding.host }}:{{ finding.port }}
+            {% if finding.cve_ids %}&mdash; CVE: {{ finding.cve_ids|join:", " }}{% endif %}
+        </p>
+
+        {% if finding.description %}
+        <div><span class="field-label">Description:</span> <span style="font-size: 9pt;">{{ finding.description|truncatechars:500 }}</span></div>
+        {% endif %}
+
+        {% if finding.solution %}
+        <div class="remediation">
+            <span class="field-label">Suggested Fix:</span><br>
+            {{ finding.solution|truncatechars:500 }}
+        </div>
+        {% endif %}
+
+        <div class="controls" style="color:#9ca3af; font-style:italic; font-size:9pt;">
+            Compliance mapping — coming soon (AI analysis pending).
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endfor %}
+
+    <div class="footer">
+        OmniGov Compliance Intelligence Platform &mdash; Princess Sumaya University for Technology &mdash; Confidential
+    </div>
+</body>
+</html>
