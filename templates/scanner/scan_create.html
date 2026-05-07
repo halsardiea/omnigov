@@ -2,11 +2,11 @@
 {% block title %}New Scan — OmniGov{% endblock %}
 
 {% block content %}
-<header class="border-b border-white/10 bg-[#08111f]/90">
+<header class="border-b border-white/10 bg-[#060d1a]/90 backdrop-blur">
     <div class="flex items-center justify-between px-6 py-5">
         <div>
             <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Create Scan</p>
-            <h1 class="mt-3 text-4xl font-semibold tracking-tight">New Scan</h1>
+            <h1 class="og-page-title mt-3 text-4xl font-semibold tracking-tight">New Scan</h1>
         </div>
         <a href="{% url 'scanner:scan-list' %}" class="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white transition hover:bg-white/[0.08]">Back to scans</a>
     </div>
@@ -15,30 +15,53 @@
 <main class="flex-1 px-6 py-8">
     <div class="grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
         <section class="rounded-[30px] border border-white/10 bg-white/[0.04] p-8">
-            <form method="post">
+            <form method="post" id="scan-create-form">
                 {% csrf_token %}
                 <div class="grid gap-5 md:grid-cols-2">
                     <div class="md:col-span-2">
-                        <label for="id_name" class="mb-2 block text-sm font-medium text-white">Scan name</label>
+                        <label for="id_name" class="mb-2 block text-sm font-medium text-white">Scan name <span class="text-red-400">*</span></label>
                         <input type="text" name="name" id="id_name" value="{{ form.name.value|default:'' }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20" placeholder="Scan name">
                         {% if form.name.errors %}<p class="mt-1 text-xs text-red-300">{{ form.name.errors.0 }}</p>{% endif %}
                     </div>
                     <div class="md:col-span-2">
-                        <label for="id_target" class="mb-2 block text-sm font-medium text-white">Target IP or CIDR</label>
+                        <label for="id_target" class="mb-2 block text-sm font-medium text-white">Target IP or CIDR <span class="text-red-400">*</span></label>
                         <input type="text" name="target" id="id_target" value="{{ form.target.value|default:'' }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 font-mono text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20" placeholder="e.g. 192.168.1.0/24">
+                        <div id="target-format-error" class="mt-2 hidden items-center gap-2 text-sm text-red-300">
+                            <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/></svg>
+                            Invalid IP address or CIDR notation.
+                        </div>
+                        <div id="target-valid" class="mt-2 hidden items-center gap-2 text-sm text-green-300">
+                            <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+                            Target format valid.
+                        </div>
                         {% if form.target.errors %}<p class="mt-1 text-xs text-red-300">{{ form.target.errors.0 }}</p>{% endif %}
                     </div>
                     <div>
-                        <label for="id_framework" class="mb-2 block text-sm font-medium text-white">Framework</label>
-                        <select name="framework" id="id_framework" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20">
-                            {% for value, label in form.framework.field.choices %}
-                            <option value="{{ value }}" {% if form.framework.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                        <div class="mb-2 flex items-center justify-between gap-3">
+                            <label class="block text-sm font-medium text-white">Compliance Frameworks <span class="text-red-400">*</span></label>
+                            <div class="flex gap-2">
+                                <button type="button" onclick="setFrameworkChecklistState(true)" class="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-white/[0.08]">Select all</button>
+                                <button type="button" onclick="setFrameworkChecklistState(false)" class="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-white/[0.08]">Clear</button>
+                            </div>
+                        </div>
+                        <div id="framework-checklist" class="space-y-3 rounded-[28px] border border-white/10 bg-[#0b1526] p-4">
+                            {% with selected_frameworks=form.frameworks.value %}
+                            {% for framework in form.frameworks.field.queryset %}
+                            <label class="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#101a2f] px-4 py-3 transition hover:border-[#d7ff68]/30 hover:bg-[#12203a]">
+                                <input type="checkbox" name="frameworks" value="{{ framework.pk }}" {% if selected_frameworks and framework.pk|stringformat:"s" in selected_frameworks %}checked{% endif %} class="mt-1 h-4 w-4 rounded border-white/20 bg-[#08111f] text-[#d7ff68] focus:ring-[#d7ff68]">
+                                <div>
+                                    <p class="text-sm font-semibold text-white">{{ framework.name }}</p>
+                                    <p class="mt-1 text-xs text-[#9ab0d0]">Version {{ framework.version }}</p>
+                                </div>
+                            </label>
                             {% endfor %}
-                        </select>
-                        {% if form.framework.errors %}<p class="mt-1 text-xs text-red-300">{{ form.framework.errors.0 }}</p>{% endif %}
+                            {% endwith %}
+                        </div>
+                        <p class="mt-2 text-xs text-[#9ab0d0]">Choose one, many, or all frameworks. The scan results will be mapped into every framework you select.</p>
+                        {% if form.frameworks.errors %}<p class="mt-1 text-xs text-red-300">{{ form.frameworks.errors.0 }}</p>{% endif %}
                     </div>
                     <div>
-                        <label for="id_scan_config" class="mb-2 block text-sm font-medium text-white">Scan Config</label>
+                        <label for="id_scan_config" class="mb-2 block text-sm font-medium text-white">Scan Configuration</label>
                         <select name="scan_config" id="id_scan_config" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20">
                             {% for value, label in form.scan_config.field.choices %}
                             <option value="{{ value }}" {% if form.scan_config.value == value %}selected{% endif %}>{{ label }}</option>
@@ -56,12 +79,70 @@
             <div class="rounded-[30px] border border-white/10 bg-white/[0.04] p-6">
                 <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Launch notes</p>
                 <ul class="mt-4 space-y-3 text-sm leading-6 text-[#c9d5e7]">
-                    <li>Targets are validated against approved network ranges before submission.</li>
-                    <li>Progress is streamed back to the detail screen during scan execution.</li>
-                    <li>After completion, findings are parsed and mapped to the selected framework.</li>
+                    <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 shrink-0 text-[#d7ff68]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>Scan targets any IP or CIDR you specify — no pre-approval required.</li>
+                    <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 shrink-0 text-[#d7ff68]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>Progress is streamed back to the detail screen during scan execution.</li>
+                    <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 shrink-0 text-[#d7ff68]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>After completion, findings are parsed and aligned to every selected framework corpus.</li>
+                    <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 shrink-0 text-[#d7ff68]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>Executive PDF and technical CSV reports are generated automatically when analysis completes.</li>
                 </ul>
             </div>
         </aside>
     </div>
 </main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function() {
+        const targetInput = document.getElementById('id_target');
+        const targetError = document.getElementById('target-format-error');
+        const targetValid = document.getElementById('target-valid');
+        const cidrPattern = /^(\d{1,3}\.){3}\d{1,3}(\/\d{1,2})?$/;
+
+        function clearState() {
+            targetError.classList.add('hidden');
+            targetError.classList.remove('flex');
+            targetValid.classList.add('hidden');
+            targetValid.classList.remove('flex');
+        }
+
+        function validateTarget(value) {
+            clearState();
+            if (!value) {
+                return;
+            }
+
+            if (!cidrPattern.test(value)) {
+                targetError.classList.remove('hidden');
+                targetError.classList.add('flex');
+                return;
+            }
+
+            const [ip, prefix] = value.split('/');
+            const octets = ip.split('.').map(Number);
+            const prefixValue = prefix ? Number(prefix) : null;
+            const octetsValid = octets.length === 4 && octets.every((octet) => octet >= 0 && octet <= 255);
+            const prefixValid = prefixValue === null || (prefixValue >= 8 && prefixValue <= 32);
+
+            if (!octetsValid || !prefixValid) {
+                targetError.classList.remove('hidden');
+                targetError.classList.add('flex');
+                return;
+            }
+
+            targetValid.classList.remove('hidden');
+            targetValid.classList.add('flex');
+        }
+
+        if (targetInput) {
+            targetInput.addEventListener('input', (event) => validateTarget(event.target.value.trim()));
+            targetInput.addEventListener('blur', (event) => validateTarget(event.target.value.trim()));
+        }
+    })();
+
+    function setFrameworkChecklistState(isChecked) {
+        document.querySelectorAll('#framework-checklist input[type="checkbox"]').forEach((checkbox) => {
+            checkbox.checked = isChecked;
+        });
+    }
+</script>
 {% endblock %}

@@ -1,120 +1,131 @@
 # ==========================================================
-# OmniGov — PRODUCTION Docker Compose
-# Runs ALL services: Nginx, Django, Celery, PostgreSQL,
-#                     Redis, GVM/OpenVAS
+# OmniGov — Docker Stack
+#
+# What runs in Docker:
+#   • Django web app  (Daphne ASGI, port 8000)
+#   • Celery worker   (scan processing + AI correlation)
+#   • PostgreSQL      (app database)
+#   • Redis           (task queue + WebSocket layer)
+#
+# GVM / OpenVAS runs in WSL on your machine (NOT in Docker).
+# The web and worker containers reach GVM over TCP via
+# host.docker.internal:9390. Start the WSL bridge first:
+#
+#   WSL terminal:
+#     sudo socat TCP-LISTEN:9390,fork,reuseaddr,bind=0.0.0.0 \
+#                UNIX-CONNECT:/run/gvmd/gvmd.sock
+#
+# Then in PowerShell:
+#   docker compose up --build -d
+#   open http://localhost:8000
 # ==========================================================
 
+networks:
+  omnigov-net:
+    driver: bridge
+
+volumes:
+  postgres_data:    # Django app database
+  redis_data:       # Redis persistence
+  static_files:     # Collected static files
+  media_files:      # Generated reports / uploads
+
 services:
-  nginx:
-    image: nginx:1.25-alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - static_files:/app/staticfiles:ro
-      - media_files:/app/media:ro
-    depends_on:
-      - web
-    restart: always
-    networks:
-      - omnigov-net
 
-  web:
-    build: .
-    command: >
-      sh -c "python manage.py migrate --noinput &&
-             python manage.py collectstatic --noinput &&
-             daphne -b 0.0.0.0 -p 8000 omnigov.asgi:application"
-    volumes:
-      - static_files:/app/staticfiles
-      - media_files:/app/media
-    env_file:
-      - .env
-    environment:
-      - DJANGO_SETTINGS_MODULE=omnigov.settings.production
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
-    restart: always
-    networks:
-      - omnigov-net
-
-  celery-worker:
-    build: .
-    command: celery -A omnigov worker -l info --concurrency=3
-    env_file:
-      - .env
-    environment:
-      - DJANGO_SETTINGS_MODULE=omnigov.settings.production
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
-    restart: always
-    networks:
-      - omnigov-net
-
-  celery-beat:
-    build: .
-    command: celery -A omnigov beat -l info --scheduler django_celery_results.schedulers:DatabaseScheduler
-    env_file:
-      - .env
-    environment:
-      - DJANGO_SETTINGS_MODULE=omnigov.settings.production
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
-    restart: always
-    networks:
-      - omnigov-net
-
+  # ──────────────────────────────────────────────────────────
+  # DATABASE
+  # ──────────────────────────────────────────────────────────
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: ${DB_NAME:-omnigov}
-      POSTGRES_USER: ${DB_USER:-omnigov}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      POSTGRES_DB:       ${DB_NAME:-omnigov}
+      POSTGRES_USER:     ${DB_USER:-omnigov}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-omnigov_secret}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-omnigov}"]
       interval: 10s
       timeout: 5s
-      retries: 5
-    restart: always
+      retries: 10
+    restart: unless-stopped
     networks:
       - omnigov-net
 
+  # ──────────────────────────────────────────────────────────
+  # REDIS
+  # ──────────────────────────────────────────────────────────
   redis:
     image: redis:7-alpine
-    restart: always
-    networks:
-      - omnigov-net
-
-  gvm:
-    image: immauss/openvas:latest
-    environment:
-      - PASSWORD=${GVM_ADMIN_PASSWORD:-admin}
-    ports:
-      - "9392:9392"
     volumes:
-      - gvm_data:/data
-    restart: always
+      - redis_data:/data
+    restart: unless-stopped
     networks:
       - omnigov-net
 
-volumes:
-  postgres_data:
-  gvm_data:
-  static_files:
-  media_files:
+  # ──────────────────────────────────────────────────────────
+  # DJANGO WEB APPLICATION
+  # ──────────────────────────────────────────────────────────
+  web:
+    build: .
+    command: /app/docker/entrypoint.sh
+    ports:
+      - "8000:8000"
+    volumes:
+      - static_files:/app/staticfiles
+      - media_files:/app/media
+    env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: omnigov.settings.container
+      DB_HOST:                postgres
+      DB_NAME:                ${DB_NAME:-omnigov}
+      DB_USER:                ${DB_USER:-omnigov}
+      DB_PASSWORD:            ${DB_PASSWORD:-omnigov_secret}
+      REDIS_URL:              redis://redis:6379/0
+      # GVM lives in WSL — reach it via the host TCP bridge
+      GVM_SOCKET_PATH:        ""
+      GVM_HOST:               host.docker.internal
+      GVM_PORT:               "9390"
+      GVM_USE_MOCK:           "False"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - omnigov-net
 
-networks:
-  omnigov-net:
-    driver: bridge
+  # ──────────────────────────────────────────────────────────
+  # CELERY WORKER  (scan processing + AI correlation)
+  # ──────────────────────────────────────────────────────────
+  worker:
+    build: .
+    command: celery -A omnigov worker -l info --concurrency=2
+    volumes:
+      - media_files:/app/media
+    env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: omnigov.settings.container
+      DB_HOST:                postgres
+      DB_NAME:                ${DB_NAME:-omnigov}
+      DB_USER:                ${DB_USER:-omnigov}
+      DB_PASSWORD:            ${DB_PASSWORD:-omnigov_secret}
+      REDIS_URL:              redis://redis:6379/0
+      # GVM lives in WSL — reach it via the host TCP bridge
+      GVM_SOCKET_PATH:        ""
+      GVM_HOST:               host.docker.internal
+      GVM_PORT:               "9390"
+      GVM_USE_MOCK:           "False"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - omnigov-net

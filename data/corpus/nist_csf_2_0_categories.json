@@ -1,0 +1,191 @@
+{
+  "framework": {
+    "name": "NIST Cybersecurity Framework",
+    "version": "2.0",
+    "description": "Official NIST Cybersecurity Framework 2.0 catalog. During corpus load, active subcategory controls are generated from the local export file when it is present.",
+    "is_active": true,
+    "source_url": "https://csrc.nist.gov/projects/cybersecurity-framework/Filters#/csf/filters"
+  },
+  "generator": {
+    "kind": "nist-csf-export",
+    "source_file": "csf-export.json"
+  },
+  "controls": [
+    {
+      "control_id": "GV.OC",
+      "title": "Organizational Context",
+      "category": "Govern",
+      "description": "The circumstances, stakeholder expectations, dependencies, and legal obligations surrounding cybersecurity risk decisions are understood.",
+      "keywords": ["mission", "stakeholders", "dependencies", "legal requirements"],
+      "guidance": "Document the mission context, dependency map, and external obligations that shape cybersecurity decisions."
+    },
+    {
+      "control_id": "GV.RM",
+      "title": "Risk Management Strategy",
+      "category": "Govern",
+      "description": "The organization establishes priorities, constraints, and risk appetite statements to support operational risk decisions.",
+      "keywords": ["risk appetite", "risk tolerance", "strategy", "enterprise risk"],
+      "guidance": "Set measurable risk objectives and communicate how risk will be evaluated and prioritized."
+    },
+    {
+      "control_id": "GV.RR",
+      "title": "Roles, Responsibilities, and Authorities",
+      "category": "Govern",
+      "description": "Cybersecurity responsibilities and authorities are defined to drive accountability, assessment, and improvement.",
+      "keywords": ["accountability", "roles", "authority", "governance"],
+      "guidance": "Assign owners for risk decisions, oversight, and execution across the organization."
+    },
+    {
+      "control_id": "GV.PO",
+      "title": "Policy",
+      "category": "Govern",
+      "description": "Organizational cybersecurity policy is established, communicated, and enforced.",
+      "keywords": ["policy", "standards", "requirements", "governance"],
+      "guidance": "Maintain an approved cybersecurity policy set and refresh it when risk conditions change."
+    },
+    {
+      "control_id": "GV.OV",
+      "title": "Oversight",
+      "category": "Govern",
+      "description": "Risk management results and performance are reviewed to adjust the cybersecurity strategy.",
+      "keywords": ["oversight", "metrics", "review", "assurance"],
+      "guidance": "Use KPIs, KRIs, and review cycles to steer strategy updates and leadership actions."
+    },
+    {
+      "control_id": "GV.SC",
+      "title": "Cybersecurity Supply Chain Risk Management",
+      "category": "Govern",
+      "description": "Cybersecurity supply chain risk processes are established, managed, monitored, and improved by stakeholders.",
+      "keywords": ["third party", "supplier", "supply chain", "vendor risk"],
+      "guidance": "Integrate supplier risk requirements into onboarding, contracts, monitoring, and termination."
+    },
+    {
+      "control_id": "ID.AM",
+      "title": "Asset Management",
+      "category": "Identify",
+      "description": "Assets that enable business purposes are identified and managed according to their importance and risk.",
+      "keywords": ["asset inventory", "data inventory", "software inventory", "lifecycle"],
+      "guidance": "Keep current inventories for systems, software, services, data, and supporting dependencies."
+    },
+    {
+      "control_id": "ID.RA",
+      "title": "Risk Assessment",
+      "category": "Identify",
+      "description": "Cybersecurity risk to the organization, its assets, and affected individuals is understood.",
+      "keywords": ["risk assessment", "threat", "vulnerability", "impact"],
+      "guidance": "Continuously assess threats, vulnerabilities, likelihoods, impacts, and planned responses."
+    },
+    {
+      "control_id": "ID.IM",
+      "title": "Improvement",
+      "category": "Identify",
+      "description": "Improvements to cybersecurity processes, procedures, and activities are identified across the CSF functions.",
+      "keywords": ["continuous improvement", "lessons learned", "assessment", "maturity"],
+      "guidance": "Feed findings from reviews, testing, and operations into measurable program improvement work."
+    },
+    {
+      "control_id": "PR.AA",
+      "title": "Identity Management, Authentication, and Access Control",
+      "category": "Protect",
+      "description": "Access to physical and logical assets is limited to authorized users, services, and hardware based on risk.",
+      "keywords": ["authentication", "identity", "access control", "least privilege"],
+      "guidance": "Manage identities, strengthen authentication, and review entitlements against least privilege."
+    },
+    {
+      "control_id": "PR.AT",
+      "title": "Awareness and Training",
+      "category": "Protect",
+      "description": "Personnel receive the awareness and training needed to perform their cybersecurity-related tasks.",
+      "keywords": ["training", "awareness", "user education", "role based training"],
+      "guidance": "Deliver recurring general and role-specific training tied to the risks people can influence."
+    },
+    {
+      "control_id": "PR.DS",
+      "title": "Data Security",
+      "category": "Protect",
+      "description": "Data is managed according to the organization risk strategy to protect confidentiality, integrity, and availability.",
+      "keywords": ["data security", "encryption", "backup", "data protection"],
+      "guidance": "Protect data at rest, in transit, and in use with classification, encryption, and backup controls."
+    },
+    {
+      "control_id": "PR.PS",
+      "title": "Platform Security",
+      "category": "Protect",
+      "description": "Hardware, software, and services on physical and virtual platforms are managed to protect their security properties.",
+      "keywords": ["platform security", "hardening", "patching", "logging"],
+      "guidance": "Secure platforms with hardened baselines, patching, logging, and software execution controls."
+    },
+    {
+      "control_id": "PR.IR",
+      "title": "Technology Infrastructure Resilience",
+      "category": "Protect",
+      "description": "Security architectures are managed to protect assets and maintain resilience under normal and adverse conditions.",
+      "keywords": ["resilience", "segmentation", "high availability", "capacity"],
+      "guidance": "Segment environments and design infrastructure to tolerate disruption and recover gracefully."
+    },
+    {
+      "control_id": "DE.CM",
+      "title": "Continuous Monitoring",
+      "category": "Detect",
+      "description": "Assets are monitored to find anomalies, indicators of compromise, and other potentially adverse events.",
+      "keywords": ["continuous monitoring", "telemetry", "anomaly detection", "ioc"],
+      "guidance": "Monitor networks, endpoints, services, and physical environments for abnormal behavior."
+    },
+    {
+      "control_id": "DE.AE",
+      "title": "Adverse Event Analysis",
+      "category": "Detect",
+      "description": "Potentially adverse events are analyzed to characterize the activity and determine whether incidents exist.",
+      "keywords": ["event analysis", "siem", "correlation", "incident declaration"],
+      "guidance": "Correlate multiple data sources so analysts can triage and declare incidents consistently."
+    },
+    {
+      "control_id": "RS.MA",
+      "title": "Incident Management",
+      "category": "Respond",
+      "description": "Responses to detected cybersecurity incidents are managed through triage, coordination, and execution.",
+      "keywords": ["incident management", "triage", "response plan", "escalation"],
+      "guidance": "Run incidents through a defined process for validation, prioritization, escalation, and action."
+    },
+    {
+      "control_id": "RS.AN",
+      "title": "Incident Analysis",
+      "category": "Respond",
+      "description": "Investigations are conducted to support effective response, forensics, and recovery planning.",
+      "keywords": ["forensics", "root cause", "incident analysis", "evidence"],
+      "guidance": "Capture evidence, reconstruct events, and establish impact and root cause for each incident."
+    },
+    {
+      "control_id": "RS.CO",
+      "title": "Incident Response Reporting and Communication",
+      "category": "Respond",
+      "description": "Response activities are coordinated with internal and external stakeholders as required by policy or law.",
+      "keywords": ["notification", "communication", "stakeholders", "reporting"],
+      "guidance": "Define who must be notified, what must be shared, and how updates are coordinated."
+    },
+    {
+      "control_id": "RS.MI",
+      "title": "Incident Mitigation",
+      "category": "Respond",
+      "description": "Activities are performed to contain incidents, limit expansion, and reduce harmful effects.",
+      "keywords": ["containment", "eradication", "mitigation", "response action"],
+      "guidance": "Provide responders with approved containment and eradication actions for common incident classes."
+    },
+    {
+      "control_id": "RC.RP",
+      "title": "Incident Recovery Plan Execution",
+      "category": "Recover",
+      "description": "Restoration activities are performed to return systems and services affected by incidents to operational use.",
+      "keywords": ["recovery", "restoration", "backup integrity", "service restoration"],
+      "guidance": "Recover in a defined order, verify restoration integrity, and confirm operational normalcy."
+    },
+    {
+      "control_id": "RC.CO",
+      "title": "Incident Recovery Communication",
+      "category": "Recover",
+      "description": "Recovery activities are coordinated and communicated with internal and external parties.",
+      "keywords": ["recovery communication", "status update", "public update", "stakeholders"],
+      "guidance": "Coordinate recovery messaging so leaders, partners, and affected parties receive accurate updates."
+    }
+  ]
+}

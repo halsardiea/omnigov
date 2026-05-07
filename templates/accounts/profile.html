@@ -12,9 +12,39 @@
     </div>
 </header>
 
-<main class="flex-1 px-6 py-8">
+<main class="flex-1 space-y-8 px-6 py-8">
+    {% if messages %}
+    <section class="space-y-2">
+        {% for message in messages %}
+        <div class="rounded-[24px] border px-5 py-4 text-sm
+            {% if message.tags == 'error' %}border-red-400/20 bg-red-400/10 text-red-100
+            {% elif message.tags == 'success' %}border-green-400/20 bg-green-400/10 text-green-100
+            {% else %}border-blue-400/20 bg-blue-400/10 text-blue-100{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    <section class="grid gap-4 md:grid-cols-2">
+        <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
+            <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Failed Attempts</p>
+            <p class="mt-4 text-2xl font-semibold text-white">{{ user.failed_login_attempts }}</p>
+            <p class="mt-2 text-sm text-[#9ab0d0]">Recent password sign-in failures still on record.</p>
+        </div>
+        <div class="rounded-[28px] border {% if user.is_locked %}border-red-400/20 bg-red-400/[0.05]{% else %}border-green-400/20 bg-green-400/[0.05]{% endif %} p-5">
+            <p class="text-sm uppercase tracking-[0.22em] {% if user.is_locked %}text-red-200{% else %}text-green-200{% endif %}">Account Lock</p>
+            <p class="mt-4 text-2xl font-semibold text-white">{% if user.is_locked %}Locked{% else %}Active{% endif %}</p>
+            <p class="mt-2 text-sm {% if user.is_locked %}text-red-100/80{% else %}text-green-100/80{% endif %}">{% if user.is_locked and user.locked_until %}Until {{ user.locked_until|date:"M d, Y H:i" }}{% else %}No active lockout in effect.{% endif %}</p>
+        </div>
+    </section>
+
     <div class="grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
         <section class="rounded-[30px] border border-white/10 bg-white/[0.04] p-8">
+            <div>
+                <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Personal Information</p>
+                <h2 class="mt-2 text-2xl font-semibold text-white">Edit account details</h2>
+            </div>
             <form method="post">
                 {% csrf_token %}
                 <div class="grid gap-5 md:grid-cols-2">
@@ -32,10 +62,6 @@
                         <label for="id_email" class="mb-2 block text-sm font-medium text-white">Email address</label>
                         <input type="email" name="email" id="id_email" value="{{ form.email.value|default:'' }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-[#9ab0d0] outline-none" readonly>
                     </div>
-                    <div class="md:col-span-2">
-                        <label class="mb-2 block text-sm font-medium text-white">Role</label>
-                        <input type="text" value="{{ user.get_role_display }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-[#9ab0d0] outline-none" readonly>
-                    </div>
                 </div>
                 <div class="mt-8">
                     <button type="submit" class="rounded-2xl bg-[#d7ff68] px-5 py-3 font-semibold text-slate-950 shadow-[0_14px_34px_rgba(215,255,104,0.25)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#e7ff95] active:scale-[0.98]">Save profile</button>
@@ -47,8 +73,18 @@
                 <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Security Status</p>
                 <div class="mt-4 space-y-3 text-sm">
                     <div class="rounded-2xl border border-green-400/20 bg-green-400/10 p-4 text-green-100">Last sign-in: {{ user.last_login|date:"M d, Y H:i"|default:"Never" }}</div>
-                    <div class="rounded-2xl border border-white/10 bg-[#0c1628] p-4 text-[#c9d5e7]">Role: {{ user.get_role_display }} — Member since {{ user.date_joined|date:"M d, Y" }}</div>
+                    <div class="rounded-2xl border border-white/10 bg-[#0c1628] p-4 text-[#c9d5e7]">Administrator account — Member since {{ user.date_joined|date:"M d, Y" }}</div>
+                    <div class="rounded-2xl border border-white/10 bg-[#0c1628] p-4 text-[#c9d5e7]">Sign-in: Direct password authentication (no OTP).</div>
                 </div>
+            </div>
+            <div class="rounded-[30px] border border-white/10 bg-white/[0.04] p-6">
+                <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Permissions</p>
+                <ul class="mt-4 space-y-3 text-sm text-[#c9d5e7]">
+                    <li class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-green-400"></span>View compliance frameworks and mapped controls</li>
+                    <li class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-green-400"></span>Download generated reports</li>
+                    <li class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-green-400"></span>Create and manage scans</li>
+                    <li class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-green-400"></span>Administrative sync and governance actions available</li>
+                </ul>
             </div>
         </aside>
     </div>

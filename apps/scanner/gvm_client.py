@@ -1,3 +1,20 @@
+# ---
+# LOCATION : apps/scanner/gvm_client.py
+# PURPOSE  : Abstracts all communication with the GVM/OpenVAS vulnerability scanner
+#            behind a common interface. Two implementations are provided:
+#              MockGVMClient — returns synthetic scan data; used when GVM_USE_MOCK=True
+#                              so the full pipeline can be tested without a real scanner
+#              RealGVMClient  — connects to the live GVM daemon via Unix socket or TLS;
+#                              used in all real deployment scenarios
+#            get_gvm_client() reads the GVM_USE_MOCK setting and returns the right one.
+#
+# CONNECTS TO:
+#   - apps/scanner/tasks.py          → _run_scan_pipeline() calls get_gvm_client() to
+#                                       obtain a client, then connect/create/poll/report
+#   - omnigov/settings/base.py       → GVM_USE_MOCK, GVM_SOCKET_PATH, GVM_HOST,
+#                                       GVM_PORT, GVM_ADMIN_USER, GVM_ADMIN_PASSWORD
+#                                       are all read from settings here
+# ---
 """
 GVM Client — Wrapper around python-gvm for OpenVAS operations.
 
@@ -12,6 +29,14 @@ from typing import Optional
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
+
+
+# Normalises the scan config name submitted by the user into the hyphenated
+# lowercase form that GVM scan profile keys expect.
+# Handles both 'full_and_fast' (form choice value) and 'full-and-fast' (GVM name).
+def _normalize_scan_config(scan_config: Optional[str]) -> str:
+  normalized = (scan_config or 'full-and-fast').strip().lower().replace('_', '-')
+  return normalized or 'full-and-fast'
 
 # Sample OpenVAS XML report for mock/demo mode
 MOCK_REPORT_XML = """<?xml version="1.0" encoding="UTF-8"?>
@@ -167,9 +192,13 @@ class MockGVMClient:
         return target_id
 
     def create_and_start_task(self, target_id: str, scan_config: str = 'full-and-fast') -> str:
+        normalized_config = _normalize_scan_config(scan_config)
         task_id = str(uuid.uuid4())
-        self._tasks[task_id] = {'progress': 0, 'status': 'Running'}
-        logger.info(f"[MOCK GVM] Created and started task {task_id} for target {target_id}")
+        self._tasks[task_id] = {'progress': 0, 'status': 'Running', 'scan_config': normalized_config}
+        logger.info(
+            f"[MOCK GVM] Created and started task {task_id} for target {target_id} "
+            f"with profile {normalized_config}"
+        )
         return task_id
 
     def get_task_progress(self, task_id: str) -> int:
@@ -180,6 +209,15 @@ class MockGVMClient:
         increment = min(100 - current, max(15, 25))
         self._tasks[task_id]['progress'] = min(100, current + increment)
         return self._tasks[task_id]['progress']
+
+    def get_task_status(self, task_id: str) -> str:
+        if task_id not in self._tasks:
+            return 'Done'
+        progress = self._tasks[task_id].get('progress', 0)
+        status = self._tasks[task_id].get('status', 'Running')
+        if status == 'Stopped':
+            return 'Stopped'
+        return 'Done' if progress >= 100 else 'Running'
 
     def stop_task(self, task_id: str) -> bool:
         if task_id in self._tasks:
@@ -199,12 +237,16 @@ class MockGVMClient:
 class RealGVMClient:
     """Connects to a real GVM/OpenVAS instance via GMP over TCP."""
 
-    # Standard GVM scan config IDs
+    # Scan config UUIDs — queried live from this GVM installation
     SCAN_CONFIGS = {
-        'full-and-fast': 'daba56c8-73ec-11df-a475-002264764cea',
-        'full-and-fast-ultimate': '698f691e-7489-11df-9d8c-002264764cea',
-        'full-and-deep': '708f25c4-7489-11df-8094-002264764cea',
-        'full-and-deep-ultimate': '74db13d6-7489-11df-91b9-002264764cea',
+        'full-and-fast':          'daba56c8-73ec-11df-a475-002264764cea',  # Full and fast
+        'full-and-fast-ultimate': 'daba56c8-73ec-11df-a475-002264764cea',  # fallback → Full and fast
+        'full-and-deep':          'daba56c8-73ec-11df-a475-002264764cea',  # fallback → Full and fast
+        'full-and-deep-ultimate': 'daba56c8-73ec-11df-a475-002264764cea',  # fallback → Full and fast
+        'discovery':              '8715c877-47a0-438d-98a3-27c7a6ab2196',  # Discovery
+        'host-discovery':         '2d3f051c-55ba-11e3-bf43-406186ea4fc5',  # Host Discovery
+        'system-discovery':       'bbca7412-a950-11e3-9109-406186ea4fc5',  # System Discovery
+        'log4shell':              'e3efebc5-fc0d-4cb6-b1b4-55309d0a89f6',  # Log4Shell
     }
     DEFAULT_SCANNER_ID = '08b69003-5fc2-4037-a479-93b440211c73'
 
@@ -224,13 +266,13 @@ class RealGVMClient:
             connection = UnixSocketConnection(path=socket_path, timeout=60)
             logger.info(f"Connecting to GVM via Unix socket: {socket_path}")
         else:
-            from gvm.connections import TcpConnection
-            connection = TcpConnection(
+            from gvm.connections import TLSConnection
+            connection = TLSConnection(
                 hostname=settings.GVM_HOST,
                 port=settings.GVM_PORT,
                 timeout=30,
             )
-            logger.info(f"Connecting to GVM via TCP at {settings.GVM_HOST}:{settings.GVM_PORT}")
+            logger.info(f"Connecting to GVM via TLS at {settings.GVM_HOST}:{settings.GVM_PORT}")
 
         # Directly instantiate GMPv225 — skips version negotiation that
         # rejects GMP 22.7. GMPv225 is backward-compatible with 22.7.
@@ -259,7 +301,8 @@ class RealGVMClient:
         return target_id
 
     def create_and_start_task(self, target_id: str, scan_config: str = 'full-and-fast') -> str:
-        config_id = self.SCAN_CONFIGS.get(scan_config, self.SCAN_CONFIGS['full-and-fast'])
+        normalized_config = _normalize_scan_config(scan_config)
+        config_id = self.SCAN_CONFIGS.get(normalized_config, self.SCAN_CONFIGS['full-and-fast'])
         response = self._gmp.create_task(
             name=f"OmniGov Scan {target_id[:8]}",
             config_id=config_id,
@@ -269,7 +312,7 @@ class RealGVMClient:
         )
         task_id = response.get('id')
         self._gmp.start_task(task_id)
-        logger.info(f"GVM task created and started: {task_id}")
+        logger.info(f"GVM task created and started: {task_id} using profile {normalized_config}")
         return task_id
 
     def get_task_progress(self, task_id: str) -> int:

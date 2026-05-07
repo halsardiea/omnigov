@@ -13,6 +13,7 @@
         .finding { border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin: 12px 0; page-break-inside: avoid; }
         .finding-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .severity-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-weight: bold; font-size: 9pt; }
+        .sev-critical { background: #fee2e2; color: #991b1b; }
         .sev-high { background: #fee2e2; color: #dc2626; }
         .sev-medium { background: #fef3c7; color: #d97706; }
         .sev-low { background: #dbeafe; color: #2563eb; }
@@ -36,33 +37,66 @@
     {% for severity, findings in findings_by_severity.items %}
     {% if findings %}
     <h2>{{ severity }} Severity Findings ({{ findings|length }})</h2>
-    {% for finding in findings %}
+    {% for entry in findings %}
     <div class="finding">
         <div>
-            <strong>{{ finding.name }}</strong>
+            <strong>{{ entry.finding.name }}</strong>
             <span class="severity-badge sev-{{ severity|lower }}">{{ severity }}</span>
-            {% if finding.cvss_score %}<span style="margin-left: 8px; font-size: 9pt; color: #666;">CVSS: {{ finding.cvss_score }}</span>{% endif %}
+            {% if entry.finding.cvss_score %}<span style="margin-left: 8px; font-size: 9pt; color: #666;">CVSS: {{ entry.finding.cvss_score }}</span>{% endif %}
         </div>
 
         <p style="font-size: 9pt; color: #666; margin: 5px 0;">
-            Host: {{ finding.host }}:{{ finding.port }}
-            {% if finding.cve_ids %}&mdash; CVE: {{ finding.cve_ids|join:", " }}{% endif %}
+            Host: {{ entry.finding.host }}:{{ entry.finding.port }}
+            {% if entry.finding.cve_ids %}&mdash; CVE: {{ entry.finding.cve_ids|join:", " }}{% endif %}
+            {% if entry.finding.qod %}&mdash; QoD: {{ entry.finding.qod }}%{% endif %}
+            {% if entry.finding.nvt_oid %}&mdash; NVT: {{ entry.finding.nvt_oid }}{% endif %}
         </p>
 
-        {% if finding.description %}
-        <div><span class="field-label">Description:</span> <span style="font-size: 9pt;">{{ finding.description|truncatechars:500 }}</span></div>
+        {% if entry.finding.description %}
+        <div><span class="field-label">Description:</span> <span style="font-size: 9pt; white-space: pre-line;">{{ entry.finding.description }}</span></div>
         {% endif %}
 
-        {% if finding.solution %}
+        {% if entry.finding.solution %}
         <div class="remediation">
             <span class="field-label">Suggested Fix:</span><br>
-            {{ finding.solution|truncatechars:500 }}
+            <span style="white-space: pre-line;">{{ entry.finding.solution }}</span>
         </div>
         {% endif %}
 
-        <div class="controls" style="color:#9ca3af; font-style:italic; font-size:9pt;">
-            Compliance mapping — coming soon (AI analysis pending).
+        {% if entry.matched_controls %}
+        <div class="controls">
+            <span class="field-label">Matched Controls:</span>
+            {% for control in entry.matched_controls %}
+            <div style="margin-top: 8px;">
+                <div><strong>{{ control.control_id }} — {{ control.title }}</strong>{% if control.category %} ({{ control.category }}){% endif %}{% if control.score %} — score {{ control.score|floatformat:2 }}{% endif %}</div>
+                {% if control.description %}<div style="margin-top: 3px; white-space: pre-line;">{{ control.description }}</div>{% endif %}
+                {% if control.guidance %}<div style="margin-top: 3px; color: #4b5563; white-space: pre-line;"><strong>Guidance:</strong> {{ control.guidance }}</div>{% endif %}
+                {% if control.match_reasons %}<div style="margin-top: 3px; color: #4b5563;"><strong>Why matched:</strong> {{ control.match_reasons|join:", " }}</div>{% endif %}
+            </div>
+            {% endfor %}
         </div>
+        {% endif %}
+
+        {% if entry.executive_summary %}
+        <div class="controls">
+            <span class="field-label">Correlation Summary:</span><br>
+            <span style="white-space: pre-line;">{{ entry.executive_summary }}</span>
+        </div>
+        {% endif %}
+
+        {% if entry.technical_remediation %}
+        <div class="remediation">
+            <span class="field-label">Framework-Aligned Remediation:</span><br>
+            <span style="white-space: pre-line;">{{ entry.technical_remediation }}</span>
+        </div>
+        {% endif %}
+
+        {% if entry.finding.references %}
+        <div style="margin-top: 8px; font-size: 9pt;">
+            <span class="field-label">References:</span>
+            <span style="white-space: pre-line;">{{ entry.finding.references|join:", " }}</span>
+        </div>
+        {% endif %}
     </div>
     {% endfor %}
     {% endif %}

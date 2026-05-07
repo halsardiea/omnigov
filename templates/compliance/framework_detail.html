@@ -6,36 +6,150 @@
     <div class="flex items-center justify-between px-6 py-5">
         <div>
             <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">{{ framework.name }}:{{ framework.version }}</p>
-            <h1 class="mt-3 text-4xl font-semibold tracking-tight">Framework Controls</h1>
+            <h1 class="mt-3 text-4xl font-semibold tracking-tight">Framework Catalog</h1>
         </div>
         <a href="{% url 'compliance:framework-list' %}" class="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white transition hover:bg-white/[0.08]">Back to frameworks</a>
     </div>
 </header>
 
-<main class="flex-1 px-6 py-8">
-    <section class="overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.04]">
-        <table class="min-w-full divide-y divide-white/10">
-            <thead class="bg-white/[0.02] text-left text-xs uppercase tracking-[0.2em] text-[#9ab0d0]">
-                <tr>
-                    <th class="px-6 py-4">Control ID</th>
-                    <th class="px-6 py-4">Title</th>
-                    <th class="px-6 py-4">Category</th>
-                    <th class="px-6 py-4">Description</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-white/10 text-sm text-[#c9d5e7]">
-                {% for control in controls %}
-                <tr class="transition hover:bg-white/[0.03]">
-                    <td class="px-6 py-4 font-mono text-white">{{ control.control_id }}</td>
-                    <td class="px-6 py-4 font-medium text-white">{{ control.title }}</td>
-                    <td class="px-6 py-4">{{ control.category }}</td>
-                    <td class="px-6 py-4">{{ control.description|truncatechars:120 }}</td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="4" class="px-6 py-8 text-center text-[#9ab0d0]">No controls loaded for this framework.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<main class="flex-1 space-y-8 px-6 py-8">
+    <section class="rounded-[30px] border border-white/10 bg-white/[0.04] p-6">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div class="max-w-3xl">
+                <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Framework Summary</p>
+                <h2 class="mt-3 text-3xl font-semibold text-white">{{ framework.name }}</h2>
+                <p class="mt-3 text-sm leading-relaxed text-[#c9d5e7]">{{ framework.description }}</p>
+            </div>
+            <span class="w-fit rounded-full border px-4 py-2 text-sm font-semibold {% if control_count %}border-green-400/20 bg-green-400/10 text-green-300{% else %}border-amber-400/20 bg-amber-400/10 text-amber-300{% endif %}">{{ catalog_status }}</span>
+        </div>
     </section>
+
+    <section class="grid gap-4 md:grid-cols-3">
+        <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
+            <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Indexed Controls</p>
+            <p class="mt-4 text-3xl font-semibold text-white">{{ control_count }}</p>
+            <p class="mt-2 text-sm text-[#9ab0d0]">Catalog entries loaded for this framework.</p>
+        </div>
+        <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
+            <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Categories</p>
+            <p class="mt-4 text-3xl font-semibold text-white">{{ category_breakdown|length }}</p>
+            <p class="mt-2 text-sm text-[#9ab0d0]">Distinct control families represented in the local catalog.</p>
+        </div>
+        <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
+            <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Version</p>
+            <p class="mt-4 text-3xl font-semibold text-white">{{ framework.version }}</p>
+            <p class="mt-2 text-sm text-[#9ab0d0]">Active reference version currently mapped in OmniGov.</p>
+        </div>
+    </section>
+
+    {% if controls %}
+    <section class="rounded-[30px] border border-white/10 bg-white/[0.04] p-5">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Catalog Filters</p>
+                <h3 class="mt-2 text-xl font-semibold text-white">Explore mapped controls</h3>
+            </div>
+            <div class="w-full max-w-md">
+                <input id="controlSearch" type="search" placeholder="Search by ID, title, description, or keyword" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20">
+            </div>
+        </div>
+        <div class="mt-5 flex flex-wrap gap-3">
+            <button type="button" class="control-filter rounded-full border border-[#d7ff68]/30 bg-[#d7ff68]/10 px-4 py-2 text-sm font-semibold text-[#d7ff68]" data-category="all">All categories</button>
+            {% for item in category_breakdown %}
+            <button type="button" class="control-filter rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-medium text-[#c9d5e7] transition hover:bg-white/[0.08]" data-category="{{ item.name|slugify }}">{{ item.name }} <span class="ml-1 text-[#9ab0d0]">{{ item.count }}</span></button>
+            {% endfor %}
+        </div>
+        <p id="controlResultsCount" class="mt-4 text-sm text-[#9ab0d0]">Showing {{ control_count }} of {{ control_count }} controls.</p>
+    </section>
+
+    <section class="overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.04]">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-white/10">
+                <thead class="bg-white/[0.02] text-left text-xs uppercase tracking-[0.2em] text-[#9ab0d0]">
+                    <tr>
+                        <th class="px-6 py-4">Control ID</th>
+                        <th class="px-6 py-4">Title</th>
+                        <th class="px-6 py-4">Category</th>
+                        <th class="px-6 py-4">Summary</th>
+                        <th class="px-6 py-4">Guidance</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/10 text-sm text-[#c9d5e7]">
+                    {% for control in controls %}
+                    <tr class="control-row transition hover:bg-white/[0.03]" data-category="{{ control.category|slugify }}" data-search="{{ control.control_id|lower }} {{ control.title|lower }} {{ control.description|lower }} {{ control.guidance|lower }} {{ control.keywords|join:' '|lower }}">
+                        <td class="px-6 py-4 align-top font-mono text-white">{{ control.control_id }}</td>
+                        <td class="px-6 py-4 align-top">
+                            <p class="font-medium text-white">{{ control.title }}</p>
+                            {% if control.keywords %}
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                {% for keyword in control.keywords|slice:':4' %}
+                                <span class="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs text-[#9ab0d0]">{{ keyword }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 align-top text-[#9ab0d0]">{{ control.category }}</td>
+                        <td class="px-6 py-4 align-top">{{ control.description }}</td>
+                        <td class="px-6 py-4 align-top text-[#9ab0d0]">{{ control.guidance|default:'No additional local guidance attached.' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="controlEmptyState" class="hidden px-6 py-12 text-center text-sm text-[#9ab0d0]">No controls match the current filter.</div>
+    </section>
+    {% else %}
+    <section class="rounded-[30px] border border-amber-400/15 bg-amber-400/[0.04] p-6">
+        <h3 class="text-xl font-semibold text-white">Metadata-only framework</h3>
+        <p class="mt-3 text-sm leading-relaxed text-[#c9d5e7]">This framework is intentionally held at metadata level inside OmniGov. The source material is authoritative, but it is currently published in a format that does not support reliable automated control extraction without inventing unsupported statements.</p>
+        <p class="mt-3 text-sm text-[#c9d5e7]">Use the framework summary above as the canonical reference until a stable official catalog is available.</p>
+    </section>
+    {% endif %}
 </main>
+{% endblock %}
+
+{% block extra_js %}
+{% if controls %}
+<script>
+    const controlRows = Array.from(document.querySelectorAll('.control-row'));
+    const controlFilters = Array.from(document.querySelectorAll('.control-filter'));
+    const controlSearch = document.getElementById('controlSearch');
+    const controlResultsCount = document.getElementById('controlResultsCount');
+    const controlEmptyState = document.getElementById('controlEmptyState');
+    let activeCategory = 'all';
+
+    function applyControlFilters() {
+        const query = (controlSearch.value || '').trim().toLowerCase();
+        let visibleCount = 0;
+
+        controlRows.forEach((row) => {
+            const matchesCategory = activeCategory === 'all' || row.dataset.category === activeCategory;
+            const matchesQuery = !query || row.dataset.search.includes(query);
+            const visible = matchesCategory && matchesQuery;
+            row.classList.toggle('hidden', !visible);
+            if (visible) {
+                visibleCount += 1;
+            }
+        });
+
+        controlResultsCount.textContent = `Showing ${visibleCount} of ${controlRows.length} controls.`;
+        controlEmptyState.classList.toggle('hidden', visibleCount !== 0);
+    }
+
+    controlFilters.forEach((filter) => {
+        filter.addEventListener('click', () => {
+            activeCategory = filter.dataset.category;
+            controlFilters.forEach((button) => {
+                const isActive = button === filter;
+                button.className = isActive
+                    ? 'control-filter rounded-full border border-[#d7ff68]/30 bg-[#d7ff68]/10 px-4 py-2 text-sm font-semibold text-[#d7ff68]'
+                    : 'control-filter rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-medium text-[#c9d5e7] transition hover:bg-white/[0.08]';
+            });
+            applyControlFilters();
+        });
+    });
+
+    controlSearch.addEventListener('input', applyControlFilters);
+</script>
+{% endif %}
 {% endblock %}

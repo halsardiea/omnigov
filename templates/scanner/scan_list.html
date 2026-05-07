@@ -2,18 +2,31 @@
 {% block title %}Scans — OmniGov{% endblock %}
 
 {% block content %}
-<header class="border-b border-white/10 bg-[#08111f]/90">
+<header class="border-b border-white/10 bg-[#060d1a]/90 backdrop-blur">
     <div class="flex items-center justify-between px-6 py-5">
         <div>
             <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Scanner</p>
-            <h1 class="mt-3 text-4xl font-semibold tracking-tight">Scan Queue</h1>
+            <h1 class="og-page-title mt-3 text-4xl font-semibold tracking-tight">Scan Queue</h1>
         </div>
+        {% if can_manage_scans %}
         <a href="{% url 'scanner:scan-create' %}" class="rounded-2xl bg-[#d7ff68] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_34px_rgba(215,255,104,0.25)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#e7ff95] active:scale-[0.98]">Create scan</a>
+        {% endif %}
     </div>
 </header>
 
 <main class="flex-1 px-6 py-8">
-    <section class="overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.04]">
+    {% if scans %}
+    <div class="mb-5 flex flex-wrap gap-2">
+        <button type="button" class="scan-filter-btn rounded-2xl border border-[#d7ff68]/20 bg-[#d7ff68]/10 px-4 py-2 text-sm font-semibold text-[#d7ff68]" onclick="filterScans('all', this)">All ({{ status_counts.all }})</button>
+        <button type="button" class="scan-filter-btn rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-[#9ab0d0]" onclick="filterScans('pending', this)">Pending ({{ status_counts.pending }})</button>
+        <button type="button" class="scan-filter-btn rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-[#9ab0d0]" onclick="filterScans('running', this)">Running ({{ status_counts.running }})</button>
+        <button type="button" class="scan-filter-btn rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-[#9ab0d0]" onclick="filterScans('analyzing', this)">Analyzing ({{ status_counts.analyzing }})</button>
+        <button type="button" class="scan-filter-btn rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-[#9ab0d0]" onclick="filterScans('completed', this)">Completed ({{ status_counts.completed }})</button>
+        <button type="button" class="scan-filter-btn rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-[#9ab0d0]" onclick="filterScans('failed', this)">Failed ({{ status_counts.failed }})</button>
+        <button type="button" class="scan-filter-btn rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-[#9ab0d0]" onclick="filterScans('stopped', this)">Stopped ({{ status_counts.stopped }})</button>
+    </div>
+
+    <section id="scans-table" class="overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.04]">
         <table class="min-w-full divide-y divide-white/10">
             <thead class="bg-white/[0.02] text-left text-xs uppercase tracking-[0.2em] text-[#9ab0d0]">
                 <tr>
@@ -27,10 +40,10 @@
             </thead>
             <tbody class="divide-y divide-white/10 text-sm text-[#c9d5e7]">
                 {% for scan in scans %}
-                <tr class="transition hover:bg-white/[0.03]">
+                <tr class="transition hover:bg-white/[0.03]" data-scan-status="{% if scan.status == 'analyzed' or scan.status == 'completed' %}completed{% else %}{{ scan.status }}{% endif %}">
                     <td class="px-6 py-4"><a href="{% url 'scanner:scan-detail' scan.pk %}" class="font-medium text-white transition hover:text-[#d7ff68]">{{ scan.name }}</a></td>
                     <td class="px-6 py-4 font-mono">{{ scan.target }}</td>
-                    <td class="px-6 py-4">{{ scan.framework.name }} {{ scan.framework.version }}</td>
+                    <td class="px-6 py-4">{{ scan.framework_names }}</td>
                     <td class="px-6 py-4">
                         <span class="rounded-full border px-3 py-1 text-xs font-semibold
                             {% if scan.status == 'analyzed' or scan.status == 'completed' %}border-green-400/20 bg-green-400/10 text-green-300
@@ -41,14 +54,77 @@
                             {{ scan.get_status_display }}
                         </span>
                     </td>
-                    <td class="px-6 py-4">{{ scan.progress }}%</td>
+                    <td class="px-6 py-4">
+                        <div class="min-w-[140px]">
+                            <div class="flex items-center justify-between text-xs text-[#9ab0d0]">
+                                <span>{{ scan.progress }}%</span>
+                                <span>{% if scan.status == 'failed' %}Interrupted{% elif scan.status == 'stopped' %}Stopped{% else %}Live{% endif %}</span>
+                            </div>
+                            <div class="mt-2 h-1.5 rounded-full bg-white/10">
+                                <div class="h-1.5 rounded-full {% if scan.status == 'analyzed' or scan.status == 'completed' %}bg-green-400{% elif scan.status == 'failed' %}bg-red-500/10{% else %}bg-[#d7ff68]{% endif %}" style="width: {{ scan.progress }}%"></div>
+                            </div>
+                        </div>
+                    </td>
                     <td class="px-6 py-4">{{ scan.created_at|date:"M d, H:i" }}</td>
                 </tr>
-                {% empty %}
-                <tr><td colspan="6" class="px-6 py-8 text-center text-[#9ab0d0]">No scans found. Create your first scan above.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
     </section>
+    <div id="scans-empty" class="hidden mt-4 rounded-[30px] border border-dashed border-white/10 bg-white/[0.02] px-6 py-16 text-center">
+        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
+            <svg class="h-7 w-7 text-[#9ab0d0]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+        </div>
+        <h3 class="mt-5 text-xl font-semibold text-white">No scans match this filter</h3>
+        <p class="mt-2 text-sm text-[#9ab0d0]">{% if can_manage_scans %}Try a different status filter or create a new scan.{% else %}Try a different status filter.{% endif %}</p>
+        {% if can_manage_scans %}
+        <a href="{% url 'scanner:scan-create' %}" class="mt-6 inline-block rounded-2xl bg-[#d7ff68] px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_34px_rgba(215,255,104,0.22)] transition hover:-translate-y-0.5 hover:bg-[#e7ff95]">Create scan</a>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="rounded-[30px] border border-dashed border-white/10 bg-white/[0.02] px-6 py-16 text-center">
+        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
+            <svg class="h-7 w-7 text-[#9ab0d0]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+        </div>
+        <h3 class="mt-5 text-xl font-semibold text-white">No scans yet</h3>
+        <p class="mt-2 text-sm text-[#9ab0d0]">{% if can_manage_scans %}Create your first scan to start generating findings and reports.{% else %}No scans are visible for your account yet.{% endif %}</p>
+        {% if can_manage_scans %}
+        <a href="{% url 'scanner:scan-create' %}" class="mt-6 inline-block rounded-2xl bg-[#d7ff68] px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_34px_rgba(215,255,104,0.22)] transition hover:-translate-y-0.5 hover:bg-[#e7ff95]">Create scan</a>
+        {% endif %}
+    </div>
+    {% endif %}
 </main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function filterScans(status, activeButton) {
+        document.querySelectorAll('.scan-filter-btn').forEach((button) => {
+            button.classList.remove('border-[#d7ff68]/20', 'bg-[#d7ff68]/10', 'text-[#d7ff68]');
+            button.classList.add('border-white/10', 'bg-white/[0.04]', 'text-[#9ab0d0]');
+        });
+
+        activeButton.classList.add('border-[#d7ff68]/20', 'bg-[#d7ff68]/10', 'text-[#d7ff68]');
+        activeButton.classList.remove('border-white/10', 'bg-white/[0.04]', 'text-[#9ab0d0]');
+
+        let visible = 0;
+        document.querySelectorAll('tr[data-scan-status]').forEach((row) => {
+            const shouldShow = status === 'all' || row.dataset.scanStatus === status;
+            row.style.display = shouldShow ? '' : 'none';
+            if (shouldShow) {
+                visible += 1;
+            }
+        });
+
+        const table = document.getElementById('scans-table');
+        const empty = document.getElementById('scans-empty');
+        if (table) {
+            table.style.display = visible ? '' : 'none';
+        }
+        if (empty) {
+            empty.style.display = visible ? 'none' : '';
+            empty.classList.toggle('hidden', !!visible);
+        }
+    }
+</script>
 {% endblock %}

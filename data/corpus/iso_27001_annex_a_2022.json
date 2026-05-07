@@ -1,0 +1,755 @@
+{
+  "framework": {
+    "name": "ISO/IEC 27001 Annex A Controls",
+    "version": "2022",
+    "description": "The ISO/IEC 27001:2022 Annex A control set represented as normalized IDs, public titles, and concise implementation-oriented summaries.",
+    "is_active": true,
+    "source_url": "https://hightable.io/iso-27001-annex-a-controls-reference-guide/"
+  },
+  "controls": [
+    {
+      "control_id": "A.5.1",
+      "title": "Policies for information security",
+      "category": "Organizational Controls",
+      "description": "Define, approve, and communicate management-level information security policies.",
+      "keywords": ["policy", "governance", "information security", "management approval"],
+      "guidance": "Maintain approved policies and review them on a scheduled basis."
+    },
+    {
+      "control_id": "A.5.2",
+      "title": "Information security roles and responsibilities",
+      "category": "Organizational Controls",
+      "description": "Assign ownership and accountability for information security duties and decisions.",
+      "keywords": ["roles", "responsibility", "accountability", "ownership"],
+      "guidance": "Document who owns each security responsibility and keep those assignments current."
+    },
+    {
+      "control_id": "A.5.3",
+      "title": "Segregation of duties",
+      "category": "Organizational Controls",
+      "description": "Separate conflicting duties so one person cannot complete high-risk actions without oversight.",
+      "keywords": ["segregation of duties", "fraud prevention", "checks and balances", "approval"],
+      "guidance": "Split authorization, execution, and review duties for sensitive processes."
+    },
+    {
+      "control_id": "A.5.4",
+      "title": "Management responsibilities",
+      "category": "Organizational Controls",
+      "description": "Require leadership to sponsor, support, and reinforce information security expectations.",
+      "keywords": ["management", "leadership", "security culture", "oversight"],
+      "guidance": "Make security responsibilities explicit in leadership communications and operating reviews."
+    },
+    {
+      "control_id": "A.5.5",
+      "title": "Contact with authorities",
+      "category": "Organizational Controls",
+      "description": "Maintain contact channels with regulators, law enforcement, and other authorities.",
+      "keywords": ["regulator", "authority", "law enforcement", "notification"],
+      "guidance": "Define who contacts authorities and under what incident or compliance conditions."
+    },
+    {
+      "control_id": "A.5.6",
+      "title": "Contact with special interest groups",
+      "category": "Organizational Controls",
+      "description": "Engage with relevant professional groups and information-sharing communities.",
+      "keywords": ["industry group", "information sharing", "community", "threat awareness"],
+      "guidance": "Participate in trusted communities that improve awareness of threats and practices."
+    },
+    {
+      "control_id": "A.5.7",
+      "title": "Threat intelligence",
+      "category": "Organizational Controls",
+      "description": "Collect and use threat intelligence to inform defensive decisions and priorities.",
+      "keywords": ["threat intelligence", "threat landscape", "advisory", "context"],
+      "guidance": "Feed relevant internal and external threat information into risk and detection workflows."
+    },
+    {
+      "control_id": "A.5.8",
+      "title": "Information security in project management",
+      "category": "Organizational Controls",
+      "description": "Integrate information security requirements into project planning and delivery.",
+      "keywords": ["project management", "security by design", "requirements", "delivery"],
+      "guidance": "Capture security requirements early in each project lifecycle."
+    },
+    {
+      "control_id": "A.5.9",
+      "title": "Inventory of information and other associated assets",
+      "category": "Organizational Controls",
+      "description": "Maintain inventories for information, supporting assets, and their owners.",
+      "keywords": ["asset inventory", "ownership", "data inventory", "classification"],
+      "guidance": "Track important information assets and assign accountable owners."
+    },
+    {
+      "control_id": "A.5.10",
+      "title": "Acceptable use of information and other associated assets",
+      "category": "Organizational Controls",
+      "description": "Define rules for acceptable use of information, devices, and related assets.",
+      "keywords": ["acceptable use", "asset handling", "user behavior", "policy"],
+      "guidance": "Publish clear usage rules and enforce them through awareness and monitoring."
+    },
+    {
+      "control_id": "A.5.11",
+      "title": "Return of assets",
+      "category": "Organizational Controls",
+      "description": "Ensure organizational assets are returned when employment or engagement changes.",
+      "keywords": ["asset return", "offboarding", "equipment", "access removal"],
+      "guidance": "Tie asset return checks to offboarding and role-change workflows."
+    },
+    {
+      "control_id": "A.5.12",
+      "title": "Classification of information",
+      "category": "Organizational Controls",
+      "description": "Classify information according to sensitivity, value, and handling requirements.",
+      "keywords": ["classification", "sensitive data", "labeling", "handling"],
+      "guidance": "Use a defined scheme so protection requirements follow the data."
+    },
+    {
+      "control_id": "A.5.13",
+      "title": "Labelling of information",
+      "category": "Organizational Controls",
+      "description": "Apply labels so people and systems can recognize handling requirements for information.",
+      "keywords": ["labeling", "classification label", "data handling", "metadata"],
+      "guidance": "Standardize labels across storage, messaging, and document workflows."
+    },
+    {
+      "control_id": "A.5.14",
+      "title": "Information transfer",
+      "category": "Organizational Controls",
+      "description": "Protect information whenever it is transferred internally or externally.",
+      "keywords": ["information transfer", "secure transmission", "data exchange", "third party"],
+      "guidance": "Use approved channels, agreements, and technical protections for information movement."
+    },
+    {
+      "control_id": "A.5.15",
+      "title": "Access control",
+      "category": "Organizational Controls",
+      "description": "Establish access control policy and principles aligned to business and risk needs.",
+      "keywords": ["access control", "least privilege", "authorization", "policy"],
+      "guidance": "Define how access is granted, reviewed, and revoked."
+    },
+    {
+      "control_id": "A.5.16",
+      "title": "Identity management",
+      "category": "Organizational Controls",
+      "description": "Manage identities through provisioning, change, and deprovisioning processes.",
+      "keywords": ["identity", "joiner mover leaver", "provisioning", "account lifecycle"],
+      "guidance": "Treat identity lifecycle management as a controlled business process."
+    },
+    {
+      "control_id": "A.5.17",
+      "title": "Authentication information",
+      "category": "Organizational Controls",
+      "description": "Protect passwords, tokens, keys, and other authentication information from misuse.",
+      "keywords": ["credential", "authentication", "password", "secret"],
+      "guidance": "Define secure creation, storage, delivery, and reset practices for authenticators."
+    },
+    {
+      "control_id": "A.5.18",
+      "title": "Access rights",
+      "category": "Organizational Controls",
+      "description": "Grant, modify, review, and remove access rights in a controlled manner.",
+      "keywords": ["access rights", "recertification", "privilege review", "revocation"],
+      "guidance": "Periodically review entitlements and remove access that no longer has a valid need."
+    },
+    {
+      "control_id": "A.5.19",
+      "title": "Information security in supplier relationships",
+      "category": "Organizational Controls",
+      "description": "Address information security expectations in relationships with suppliers.",
+      "keywords": ["supplier", "vendor", "third party", "security requirements"],
+      "guidance": "Apply supplier security requirements before granting access or sharing sensitive information."
+    },
+    {
+      "control_id": "A.5.20",
+      "title": "Addressing information security within supplier agreements",
+      "category": "Organizational Controls",
+      "description": "Embed relevant information security obligations in contracts and supplier agreements.",
+      "keywords": ["contract", "supplier agreement", "security clause", "third party"],
+      "guidance": "Use standard clauses for confidentiality, audit rights, incident notice, and safeguards."
+    },
+    {
+      "control_id": "A.5.21",
+      "title": "Managing information security in the ICT supply chain",
+      "category": "Organizational Controls",
+      "description": "Manage ICT supply chain security risks across products, services, and supporting vendors.",
+      "keywords": ["ict supply chain", "supply chain risk", "software supplier", "hardware supplier"],
+      "guidance": "Assess supplier risk throughout selection, operation, and termination."
+    },
+    {
+      "control_id": "A.5.22",
+      "title": "Monitoring, review and change management of supplier services",
+      "category": "Organizational Controls",
+      "description": "Review supplier service delivery and manage changes that could affect security.",
+      "keywords": ["supplier monitoring", "service review", "change management", "vendor assurance"],
+      "guidance": "Monitor supplier performance and re-evaluate risk when services or conditions change."
+    },
+    {
+      "control_id": "A.5.23",
+      "title": "Information security for use of cloud services",
+      "category": "Organizational Controls",
+      "description": "Define requirements for selecting, using, and exiting cloud services securely.",
+      "keywords": ["cloud security", "shared responsibility", "saas", "cloud governance"],
+      "guidance": "Set cloud usage criteria that address data protection, identity, monitoring, and exit planning."
+    },
+    {
+      "control_id": "A.5.24",
+      "title": "Information security incident management planning and preparation",
+      "category": "Organizational Controls",
+      "description": "Prepare governance, roles, and procedures for information security incident handling.",
+      "keywords": ["incident planning", "preparation", "playbook", "readiness"],
+      "guidance": "Define response processes, escalation paths, and preparation activities before incidents occur."
+    },
+    {
+      "control_id": "A.5.25",
+      "title": "Assessment and decision on information security events",
+      "category": "Organizational Controls",
+      "description": "Evaluate security events to determine whether they require incident response.",
+      "keywords": ["event triage", "incident declaration", "security event", "assessment"],
+      "guidance": "Use defined criteria to distinguish routine events from genuine incidents."
+    },
+    {
+      "control_id": "A.5.26",
+      "title": "Response to information security incidents",
+      "category": "Organizational Controls",
+      "description": "Respond to information security incidents according to documented procedures.",
+      "keywords": ["incident response", "containment", "eradication", "response action"],
+      "guidance": "Execute response plans quickly and record key decisions and actions."
+    },
+    {
+      "control_id": "A.5.27",
+      "title": "Learning from information security incidents",
+      "category": "Organizational Controls",
+      "description": "Capture lessons from incidents to improve controls, processes, and awareness.",
+      "keywords": ["lessons learned", "post incident review", "continuous improvement", "root cause"],
+      "guidance": "Run post-incident reviews and feed corrective actions into tracked improvement work."
+    },
+    {
+      "control_id": "A.5.28",
+      "title": "Collection of evidence",
+      "category": "Organizational Controls",
+      "description": "Collect and preserve evidence so it remains reliable for investigation or legal use.",
+      "keywords": ["evidence", "forensics", "chain of custody", "investigation"],
+      "guidance": "Use documented evidence-handling procedures that preserve integrity and provenance."
+    },
+    {
+      "control_id": "A.5.29",
+      "title": "Information security during disruption",
+      "category": "Organizational Controls",
+      "description": "Ensure security controls remain effective during crises and operational disruption.",
+      "keywords": ["disruption", "crisis", "emergency operation", "continuity"],
+      "guidance": "Plan how critical security safeguards will continue during degraded operations."
+    },
+    {
+      "control_id": "A.5.30",
+      "title": "ICT readiness for business continuity",
+      "category": "Organizational Controls",
+      "description": "Prepare ICT capabilities so continuity objectives can be met during disruption.",
+      "keywords": ["business continuity", "ict readiness", "recovery objective", "resilience"],
+      "guidance": "Align ICT resilience, recovery targets, and tests with continuity requirements."
+    },
+    {
+      "control_id": "A.5.31",
+      "title": "Identification of legal, statutory, regulatory and contractual requirements",
+      "category": "Organizational Controls",
+      "description": "Identify and keep current the legal and contractual requirements relevant to information security.",
+      "keywords": ["legal requirement", "regulation", "contractual obligation", "compliance"],
+      "guidance": "Maintain a register of obligations and review it when business or regulatory conditions change."
+    },
+    {
+      "control_id": "A.5.32",
+      "title": "Intellectual property rights",
+      "category": "Organizational Controls",
+      "description": "Protect intellectual property and comply with related licensing and usage restrictions.",
+      "keywords": ["intellectual property", "license", "copyright", "software licensing"],
+      "guidance": "Control use of protected material and evidence compliance with licensing terms."
+    },
+    {
+      "control_id": "A.5.33",
+      "title": "Protection of records",
+      "category": "Organizational Controls",
+      "description": "Protect records from loss, damage, unauthorized access, and improper retention.",
+      "keywords": ["record retention", "archive", "tampering", "record protection"],
+      "guidance": "Apply retention, storage, and disposal rules appropriate to the record type and obligation."
+    },
+    {
+      "control_id": "A.5.34",
+      "title": "Privacy and protection of PII",
+      "category": "Organizational Controls",
+      "description": "Protect personally identifiable information in line with applicable privacy requirements.",
+      "keywords": ["privacy", "pii", "personal data", "data protection"],
+      "guidance": "Map privacy obligations into data handling, access, retention, and response processes."
+    },
+    {
+      "control_id": "A.5.35",
+      "title": "Independent review of information security",
+      "category": "Organizational Controls",
+      "description": "Arrange independent review to assess the adequacy and effectiveness of information security.",
+      "keywords": ["independent review", "audit", "assurance", "security assessment"],
+      "guidance": "Use periodic independent review to challenge assumptions and verify control effectiveness."
+    },
+    {
+      "control_id": "A.5.36",
+      "title": "Compliance with policies and standards for information security",
+      "category": "Organizational Controls",
+      "description": "Check that information processing activities comply with internal policies and standards.",
+      "keywords": ["policy compliance", "standard compliance", "review", "assurance"],
+      "guidance": "Verify adherence to internal security rules with regular assessments and follow-up."
+    },
+    {
+      "control_id": "A.5.37",
+      "title": "Documented operating procedures",
+      "category": "Organizational Controls",
+      "description": "Document operating procedures so information processing is performed consistently and securely.",
+      "keywords": ["operating procedure", "runbook", "documentation", "operations"],
+      "guidance": "Write and maintain procedures for repeatable operational tasks and control points."
+    },
+    {
+      "control_id": "A.6.1",
+      "title": "Screening",
+      "category": "People Controls",
+      "description": "Screen candidates before granting them roles with access to organizational information and assets.",
+      "keywords": ["screening", "background check", "personnel security", "hiring"],
+      "guidance": "Apply role-appropriate pre-employment checks before access is granted."
+    },
+    {
+      "control_id": "A.6.2",
+      "title": "Terms and conditions of employment",
+      "category": "People Controls",
+      "description": "Define information security responsibilities in employment and contractual terms.",
+      "keywords": ["employment terms", "contractor agreement", "confidentiality", "responsibility"],
+      "guidance": "State security expectations and obligations before work begins."
+    },
+    {
+      "control_id": "A.6.3",
+      "title": "Information security awareness, education and training",
+      "category": "People Controls",
+      "description": "Provide awareness and training so personnel understand security responsibilities and threats.",
+      "keywords": ["awareness", "training", "education", "security culture"],
+      "guidance": "Deliver recurring role-aware training and measure whether it changes behavior."
+    },
+    {
+      "control_id": "A.6.4",
+      "title": "Disciplinary process",
+      "category": "People Controls",
+      "description": "Use a formal disciplinary process when information security violations occur.",
+      "keywords": ["disciplinary process", "violation", "enforcement", "policy breach"],
+      "guidance": "Apply consistent consequences when security obligations are ignored or violated."
+    },
+    {
+      "control_id": "A.6.5",
+      "title": "Responsibilities after termination or change of employment",
+      "category": "People Controls",
+      "description": "Retain and enforce security responsibilities when roles change or employment ends.",
+      "keywords": ["termination", "role change", "offboarding", "post employment"],
+      "guidance": "Reconfirm ongoing obligations and remove access promptly during transitions."
+    },
+    {
+      "control_id": "A.6.6",
+      "title": "Confidentiality or non-disclosure agreements",
+      "category": "People Controls",
+      "description": "Use confidentiality agreements to protect sensitive information and clarify obligations.",
+      "keywords": ["nda", "confidentiality", "non disclosure", "legal agreement"],
+      "guidance": "Review confidentiality obligations so they remain aligned with current information risks."
+    },
+    {
+      "control_id": "A.6.7",
+      "title": "Remote working",
+      "category": "People Controls",
+      "description": "Protect information and assets when people work away from controlled premises.",
+      "keywords": ["remote work", "telework", "home office", "device security"],
+      "guidance": "Define remote working controls for access, device protection, and physical privacy."
+    },
+    {
+      "control_id": "A.6.8",
+      "title": "Information security event reporting",
+      "category": "People Controls",
+      "description": "Require personnel to report observed security events and weaknesses quickly.",
+      "keywords": ["event reporting", "incident reporting", "security weakness", "escalation"],
+      "guidance": "Provide simple reporting channels and train people on when to use them."
+    },
+    {
+      "control_id": "A.7.1",
+      "title": "Physical security perimeter",
+      "category": "Physical Controls",
+      "description": "Define and protect the physical perimeter around sensitive facilities and areas.",
+      "keywords": ["physical perimeter", "facility security", "barrier", "restricted area"],
+      "guidance": "Use layered barriers and zoning around areas that hold sensitive assets."
+    },
+    {
+      "control_id": "A.7.2",
+      "title": "Physical entry controls",
+      "category": "Physical Controls",
+      "description": "Control and monitor who can physically enter protected areas.",
+      "keywords": ["badge", "physical entry", "visitor control", "access control"],
+      "guidance": "Use authenticated entry methods and maintain auditable visitor handling."
+    },
+    {
+      "control_id": "A.7.3",
+      "title": "Securing offices, rooms and facilities",
+      "category": "Physical Controls",
+      "description": "Secure offices, rooms, and facilities against unauthorized access and tampering.",
+      "keywords": ["office security", "room security", "facility hardening", "tampering"],
+      "guidance": "Apply physical safeguards appropriate to the sensitivity of each space."
+    },
+    {
+      "control_id": "A.7.4",
+      "title": "Physical security monitoring",
+      "category": "Physical Controls",
+      "description": "Monitor physical areas to detect and investigate unauthorized activity.",
+      "keywords": ["cctv", "monitoring", "intrusion alarm", "surveillance"],
+      "guidance": "Use physical monitoring measures that support detection and investigation."
+    },
+    {
+      "control_id": "A.7.5",
+      "title": "Protecting against physical and environmental threats",
+      "category": "Physical Controls",
+      "description": "Protect assets from environmental and physical threats such as fire, flood, and sabotage.",
+      "keywords": ["environmental threat", "fire", "flood", "physical protection"],
+      "guidance": "Assess local hazards and implement controls that match the risk."
+    },
+    {
+      "control_id": "A.7.6",
+      "title": "Working in secure areas",
+      "category": "Physical Controls",
+      "description": "Define working rules for personnel operating in secure areas.",
+      "keywords": ["secure area", "behavior rule", "restricted zone", "personnel control"],
+      "guidance": "Set practical rules for presence, observation, and activity inside secure spaces."
+    },
+    {
+      "control_id": "A.7.7",
+      "title": "Clear desk and clear screen",
+      "category": "Physical Controls",
+      "description": "Reduce accidental exposure by clearing sensitive documents and locking unattended screens.",
+      "keywords": ["clear desk", "clear screen", "shoulder surfing", "document security"],
+      "guidance": "Require secure storage for sensitive material when it is not actively in use."
+    },
+    {
+      "control_id": "A.7.8",
+      "title": "Equipment siting and protection",
+      "category": "Physical Controls",
+      "description": "Place and protect equipment to reduce environmental and unauthorized access risks.",
+      "keywords": ["equipment protection", "siting", "screen privacy", "physical hardware"],
+      "guidance": "Position equipment to minimize exposure to hazards and casual observation."
+    },
+    {
+      "control_id": "A.7.9",
+      "title": "Security of assets off-premises",
+      "category": "Physical Controls",
+      "description": "Protect assets when they are taken or used away from organizational premises.",
+      "keywords": ["off premises", "laptop", "mobile asset", "remote asset"],
+      "guidance": "Apply stronger protection to portable assets that leave controlled locations."
+    },
+    {
+      "control_id": "A.7.10",
+      "title": "Storage media",
+      "category": "Physical Controls",
+      "description": "Control how storage media is handled, moved, retained, and destroyed.",
+      "keywords": ["storage media", "removable media", "retention", "destruction"],
+      "guidance": "Track removable media and use secure handling and destruction methods."
+    },
+    {
+      "control_id": "A.7.11",
+      "title": "Supporting utilities",
+      "category": "Physical Controls",
+      "description": "Protect supporting utilities such as power, cooling, and communications needed by systems.",
+      "keywords": ["power", "cooling", "supporting utility", "availability"],
+      "guidance": "Plan utility resilience for services that support critical information processing."
+    },
+    {
+      "control_id": "A.7.12",
+      "title": "Cabling security",
+      "category": "Physical Controls",
+      "description": "Protect power and telecommunications cabling from interception, damage, and disruption.",
+      "keywords": ["cabling", "network cable", "wiretapping", "physical network"],
+      "guidance": "Secure routing and access to important power and communication cables."
+    },
+    {
+      "control_id": "A.7.13",
+      "title": "Equipment maintenance",
+      "category": "Physical Controls",
+      "description": "Maintain equipment properly so it remains reliable and secure throughout its use.",
+      "keywords": ["maintenance", "service", "repair", "hardware lifecycle"],
+      "guidance": "Control maintenance activities and preserve logs for important equipment."
+    },
+    {
+      "control_id": "A.7.14",
+      "title": "Secure disposal or re-use of equipment",
+      "category": "Physical Controls",
+      "description": "Remove sensitive data and securely dispose of or reuse equipment.",
+      "keywords": ["disposal", "reuse", "sanitization", "hardware retirement"],
+      "guidance": "Sanitize storage media before equipment leaves organizational control."
+    },
+    {
+      "control_id": "A.8.1",
+      "title": "User endpoint devices",
+      "category": "Technological Controls",
+      "description": "Secure endpoint devices used by personnel to access information and services.",
+      "keywords": ["endpoint", "laptop", "mobile device", "endpoint security"],
+      "guidance": "Harden user devices and manage them as a controlled endpoint fleet."
+    },
+    {
+      "control_id": "A.8.2",
+      "title": "Privileged access rights",
+      "category": "Technological Controls",
+      "description": "Restrict and control privileged access rights based on clear business need.",
+      "keywords": ["privileged access", "administrator", "pam", "elevated rights"],
+      "guidance": "Limit elevated access and review it more frequently than standard access."
+    },
+    {
+      "control_id": "A.8.3",
+      "title": "Information access restriction",
+      "category": "Technological Controls",
+      "description": "Restrict access to information and system functions according to policy.",
+      "keywords": ["information access", "restriction", "authorization", "data access"],
+      "guidance": "Implement application and system controls that enforce authorized use."
+    },
+    {
+      "control_id": "A.8.4",
+      "title": "Access to source code",
+      "category": "Technological Controls",
+      "description": "Control access to source code and related repositories to protect integrity and confidentiality.",
+      "keywords": ["source code", "repository", "integrity", "developer access"],
+      "guidance": "Protect source code repositories with strong access control and review."
+    },
+    {
+      "control_id": "A.8.5",
+      "title": "Secure authentication",
+      "category": "Technological Controls",
+      "description": "Use strong authentication methods appropriate to the associated access risk.",
+      "keywords": ["authentication", "mfa", "credential", "login security"],
+      "guidance": "Adopt robust authentication and improve it for higher-risk access scenarios."
+    },
+    {
+      "control_id": "A.8.6",
+      "title": "Capacity management",
+      "category": "Technological Controls",
+      "description": "Manage system capacity so services remain available and reliable.",
+      "keywords": ["capacity", "performance", "availability", "resource planning"],
+      "guidance": "Monitor utilization trends and plan capacity before service quality degrades."
+    },
+    {
+      "control_id": "A.8.7",
+      "title": "Protection against malware",
+      "category": "Technological Controls",
+      "description": "Prevent, detect, and recover from malware across systems and services.",
+      "keywords": ["malware", "antivirus", "endpoint protection", "ransomware"],
+      "guidance": "Use layered anti-malware controls with monitoring and response support."
+    },
+    {
+      "control_id": "A.8.8",
+      "title": "Management of technical vulnerabilities",
+      "category": "Technological Controls",
+      "description": "Identify and address technical vulnerabilities in software, systems, and services.",
+      "keywords": ["vulnerability", "patch", "exposure", "remediation"],
+      "guidance": "Monitor vulnerability sources and apply prioritized remediation workflows."
+    },
+    {
+      "control_id": "A.8.9",
+      "title": "Configuration management",
+      "category": "Technological Controls",
+      "description": "Define, control, and maintain secure configurations for technology assets.",
+      "keywords": ["configuration", "baseline", "hardening", "drift"],
+      "guidance": "Standardize secure baselines and track deviations from approved configurations."
+    },
+    {
+      "control_id": "A.8.10",
+      "title": "Information deletion",
+      "category": "Technological Controls",
+      "description": "Delete information securely when it is no longer needed.",
+      "keywords": ["deletion", "data lifecycle", "sanitization", "retention"],
+      "guidance": "Apply secure deletion methods consistent with retention and privacy needs."
+    },
+    {
+      "control_id": "A.8.11",
+      "title": "Data masking",
+      "category": "Technological Controls",
+      "description": "Mask or transform sensitive data to reduce unnecessary exposure.",
+      "keywords": ["data masking", "tokenization", "pseudonymization", "privacy"],
+      "guidance": "Use masking or anonymization when full sensitive values are not required."
+    },
+    {
+      "control_id": "A.8.12",
+      "title": "Data leakage prevention",
+      "category": "Technological Controls",
+      "description": "Detect and prevent unauthorized disclosure or exfiltration of sensitive data.",
+      "keywords": ["dlp", "data leakage", "exfiltration", "sensitive information"],
+      "guidance": "Deploy controls that detect risky transfers and block or alert on them."
+    },
+    {
+      "control_id": "A.8.13",
+      "title": "Information backup",
+      "category": "Technological Controls",
+      "description": "Create, protect, and test backups needed to restore information and services.",
+      "keywords": ["backup", "restore", "data recovery", "resilience"],
+      "guidance": "Back up critical information, protect the backups, and test restoration routinely."
+    },
+    {
+      "control_id": "A.8.14",
+      "title": "Redundancy of information processing facilities",
+      "category": "Technological Controls",
+      "description": "Use redundancy to reduce single points of failure in information processing facilities.",
+      "keywords": ["redundancy", "high availability", "failover", "resilience"],
+      "guidance": "Design redundancy for services whose failure would materially affect operations."
+    },
+    {
+      "control_id": "A.8.15",
+      "title": "Logging",
+      "category": "Technological Controls",
+      "description": "Generate and retain logs that support monitoring, analysis, and investigation.",
+      "keywords": ["logging", "audit trail", "event record", "siem"],
+      "guidance": "Capture security-relevant events with enough context to support investigation."
+    },
+    {
+      "control_id": "A.8.16",
+      "title": "Monitoring activities",
+      "category": "Technological Controls",
+      "description": "Monitor systems and services to detect abnormal or unauthorized activity.",
+      "keywords": ["monitoring", "telemetry", "alerting", "anomaly"],
+      "guidance": "Monitor important assets continuously and route alerts into an actionable process."
+    },
+    {
+      "control_id": "A.8.17",
+      "title": "Clock synchronisation",
+      "category": "Technological Controls",
+      "description": "Synchronize system clocks so logs and time-dependent functions remain trustworthy.",
+      "keywords": ["time sync", "ntp", "log integrity", "timestamp"],
+      "guidance": "Use trusted time sources and verify clock consistency across important systems."
+    },
+    {
+      "control_id": "A.8.18",
+      "title": "Use of privileged utility programs",
+      "category": "Technological Controls",
+      "description": "Control utility programs that can override or bypass normal application and system controls.",
+      "keywords": ["utility program", "privileged tool", "override", "administrative tool"],
+      "guidance": "Restrict use of powerful system tools and monitor who runs them."
+    },
+    {
+      "control_id": "A.8.19",
+      "title": "Installation of software on operational systems",
+      "category": "Technological Controls",
+      "description": "Control software installation on production systems to reduce unauthorized change and risk.",
+      "keywords": ["software installation", "production system", "change control", "allowlist"],
+      "guidance": "Require approval and validation before software is introduced into operational systems."
+    },
+    {
+      "control_id": "A.8.20",
+      "title": "Network security",
+      "category": "Technological Controls",
+      "description": "Manage and protect networks so information systems and data remain secure in transit.",
+      "keywords": ["network security", "firewall", "network control", "segmentation"],
+      "guidance": "Protect networks with controlled architecture, filtering, and secure protocols."
+    },
+    {
+      "control_id": "A.8.21",
+      "title": "Security of network services",
+      "category": "Technological Controls",
+      "description": "Define and manage the security requirements of network services in use.",
+      "keywords": ["network service", "service security", "provider", "availability"],
+      "guidance": "Set security expectations for internal and external network services."
+    },
+    {
+      "control_id": "A.8.22",
+      "title": "Segregation of networks",
+      "category": "Technological Controls",
+      "description": "Separate networks and services to reduce exposure and limit attack spread.",
+      "keywords": ["network segregation", "segmentation", "isolation", "zone"],
+      "guidance": "Use logical or physical separation to isolate systems with different trust levels."
+    },
+    {
+      "control_id": "A.8.23",
+      "title": "Web filtering",
+      "category": "Technological Controls",
+      "description": "Manage access to web resources to reduce exposure to malicious or inappropriate content.",
+      "keywords": ["web filtering", "url filtering", "browser protection", "malicious site"],
+      "guidance": "Filter unsafe web destinations and align browsing controls to risk."
+    },
+    {
+      "control_id": "A.8.24",
+      "title": "Use of cryptography",
+      "category": "Technological Controls",
+      "description": "Define and apply cryptographic protections appropriate to business and legal needs.",
+      "keywords": ["cryptography", "encryption", "key management", "certificate"],
+      "guidance": "Specify where cryptography is required and how keys are governed."
+    },
+    {
+      "control_id": "A.8.25",
+      "title": "Secure development life cycle",
+      "category": "Technological Controls",
+      "description": "Integrate security activities throughout the software development life cycle.",
+      "keywords": ["sdlc", "secure development", "software lifecycle", "devsecops"],
+      "guidance": "Embed security requirements, reviews, and gates across development and release."
+    },
+    {
+      "control_id": "A.8.26",
+      "title": "Application security requirements",
+      "category": "Technological Controls",
+      "description": "Define security requirements for applications before building, acquiring, or changing them.",
+      "keywords": ["application requirement", "security requirement", "design", "software acquisition"],
+      "guidance": "Capture security needs before development or procurement work starts."
+    },
+    {
+      "control_id": "A.8.27",
+      "title": "Secure system architecture and engineering principles",
+      "category": "Technological Controls",
+      "description": "Apply secure architecture and engineering principles to systems and supporting technologies.",
+      "keywords": ["architecture", "engineering principle", "secure design", "defense in depth"],
+      "guidance": "Use documented architecture principles to guide system and solution design."
+    },
+    {
+      "control_id": "A.8.28",
+      "title": "Secure coding",
+      "category": "Technological Controls",
+      "description": "Develop software using secure coding practices that reduce common vulnerabilities.",
+      "keywords": ["secure coding", "owasp", "input validation", "developer practice"],
+      "guidance": "Define coding standards and verify adherence with review and testing."
+    },
+    {
+      "control_id": "A.8.29",
+      "title": "Security testing in development and acceptance",
+      "category": "Technological Controls",
+      "description": "Perform security testing during development and before release or acceptance.",
+      "keywords": ["security testing", "acceptance", "qa", "verification"],
+      "guidance": "Include security tests in build, test, and release readiness criteria."
+    },
+    {
+      "control_id": "A.8.30",
+      "title": "Outsourced development",
+      "category": "Technological Controls",
+      "description": "Manage and oversee outsourced development so external work meets security expectations.",
+      "keywords": ["outsourced development", "third party developer", "supplier security", "code governance"],
+      "guidance": "Set security requirements and review mechanisms for externally developed software."
+    },
+    {
+      "control_id": "A.8.31",
+      "title": "Separation of development, test and production environments",
+      "category": "Technological Controls",
+      "description": "Separate development, test, and production environments to reduce operational and data exposure risk.",
+      "keywords": ["environment separation", "production", "test environment", "development"],
+      "guidance": "Prevent uncontrolled mixing of code, access, and live data across environments."
+    },
+    {
+      "control_id": "A.8.32",
+      "title": "Change management",
+      "category": "Technological Controls",
+      "description": "Manage changes to systems and services through formal assessment, approval, and tracking.",
+      "keywords": ["change management", "approval", "testing", "rollback"],
+      "guidance": "Require controlled change workflows for security-relevant technology changes."
+    },
+    {
+      "control_id": "A.8.33",
+      "title": "Test information",
+      "category": "Technological Controls",
+      "description": "Protect test information so it does not expose sensitive or production data unnecessarily.",
+      "keywords": ["test data", "non production", "masking", "privacy"],
+      "guidance": "Use sanitized or controlled test information whenever realistic data is needed."
+    },
+    {
+      "control_id": "A.8.34",
+      "title": "Protection of information systems during audit testing",
+      "category": "Technological Controls",
+      "description": "Plan audit and test activity so it does not undermine the security or availability of systems.",
+      "keywords": ["audit testing", "availability", "test coordination", "system protection"],
+      "guidance": "Coordinate audit activity carefully and limit its operational impact."
+    }
+  ]
+}

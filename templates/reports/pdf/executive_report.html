@@ -16,6 +16,7 @@
         th { background: #312e81; color: white; padding: 8px 12px; text-align: left; font-size: 9pt; }
         td { padding: 8px 12px; border-bottom: 1px solid #e0e0e0; font-size: 9pt; }
         tr:nth-child(even) { background: #f9f9ff; }
+        .severity-critical { color: #991b1b; font-weight: bold; }
         .severity-high { color: #dc2626; font-weight: bold; }
         .severity-medium { color: #d97706; font-weight: bold; }
         .severity-low { color: #2563eb; }
@@ -36,8 +37,16 @@
     <div class="score-box">
         <div style="font-size: 14pt; color: #666;">Compliance Score</div>
         <div class="score-value">{{ compliance_score }}%</div>
-        <div style="color: #666;">{{ passing_count }} passing / {{ failing_count }} non-compliant of {{ total_findings }} findings</div>
+        <div style="color: #666;">{{ passing_count }} aligned / {{ failing_count }} impacted of {{ total_controls }} framework controls</div>
     </div>
+
+    <h2>Framework Impact</h2>
+    <table>
+        <tr><th>Metric</th><th>Value</th></tr>
+        <tr><td>Mapped Findings</td><td>{{ alignment_summary.mapped_findings_count }}</td></tr>
+        <tr><td>Impacted Controls</td><td>{{ alignment_summary.impacted_controls_count }}</td></tr>
+        <tr><td>Top Categories</td><td>{% for category, count in alignment_summary.top_categories %}{{ category }} ({{ count }}){% if not forloop.last %}, {% endif %}{% empty %}No framework categories were matched{% endfor %}</td></tr>
+    </table>
 
     <h2>Severity Distribution</h2>
     <table>
@@ -59,13 +68,13 @@
             <th>Compliance</th>
             <th>Executive Summary</th>
         </tr>
-        {% for finding in findings %}
+        {% for entry in finding_entries %}
         <tr>
-            <td>{{ finding.name|truncatechars:60 }}</td>
-            <td class="severity-{{ finding.severity|lower }}">{{ finding.severity }}</td>
-            <td>{{ finding.cvss_score|default:"—" }}</td>
-            <td style="color:#9ca3af; font-style:italic;">AI pending</td>
-            <td style="color:#9ca3af; font-style:italic;">—</td>
+            <td>{{ entry.finding.name|truncatechars:60 }}</td>
+            <td class="severity-{{ entry.finding.severity|lower }}">{{ entry.finding.severity }}</td>
+            <td>{{ entry.finding.cvss_score|default:"—" }}</td>
+            <td>{% if entry.matched_controls %}{% for control in entry.matched_controls %}{{ control.control_id }}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}<span style="color:#9ca3af; font-style:italic;">No strong match</span>{% endif %}</td>
+            <td>{% if entry.executive_summary %}{{ entry.executive_summary|truncatechars:220 }}{% else %}<span style="color:#9ca3af; font-style:italic;">—</span>{% endif %}</td>
         </tr>
         {% endfor %}
     </table>

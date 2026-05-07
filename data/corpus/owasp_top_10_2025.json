@@ -1,0 +1,91 @@
+{
+  "framework": {
+    "name": "OWASP Top 10",
+    "version": "2025",
+    "description": "The OWASP Top 10:2025 list of the most critical web application security risks.",
+    "is_active": true,
+    "source_url": "https://owasp.org/Top10/2025/"
+  },
+  "controls": [
+    {
+      "control_id": "A01:2025",
+      "title": "Broken Access Control",
+      "category": "Application Security Risk",
+      "description": "Authorization failures allow users to access functions or data beyond their intended permissions.",
+      "keywords": ["broken access control", "authorization", "idor", "privilege escalation"],
+      "guidance": "Enforce server-side authorization checks consistently and test for privilege bypass paths."
+    },
+    {
+      "control_id": "A02:2025",
+      "title": "Security Misconfiguration",
+      "category": "Application Security Risk",
+      "description": "Insecure defaults, excessive exposure, and weak operational settings leave applications easier to compromise.",
+      "keywords": ["misconfiguration", "default settings", "hardening", "exposed service"],
+      "guidance": "Harden every deployment tier and continuously verify configuration drift."
+    },
+    {
+      "control_id": "A03:2025",
+      "title": "Software Supply Chain Failures",
+      "category": "Application Security Risk",
+      "description": "Weaknesses in dependencies, build pipelines, or component provenance can compromise delivered software.",
+      "keywords": ["software supply chain", "dependency risk", "ci cd", "sbom"],
+      "guidance": "Track components, secure build pipelines, and verify the integrity of dependencies and releases."
+    },
+    {
+      "control_id": "A04:2025",
+      "title": "Cryptographic Failures",
+      "category": "Application Security Risk",
+      "description": "Sensitive data is exposed when cryptography is missing, weak, misused, or poorly implemented.",
+      "keywords": ["cryptography", "encryption", "key management", "tls"],
+      "guidance": "Protect sensitive data with modern algorithms, strong key management, and correct transport settings."
+    },
+    {
+      "control_id": "A05:2025",
+      "title": "Injection",
+      "category": "Application Security Risk",
+      "description": "Untrusted input reaches interpreters or unsafe execution contexts and changes application behavior.",
+      "keywords": ["injection", "sql injection", "command injection", "input validation"],
+      "guidance": "Use parameterization, strict validation, and output encoding around all interpreter boundaries."
+    },
+    {
+      "control_id": "A06:2025",
+      "title": "Insecure Design",
+      "category": "Application Security Risk",
+      "description": "Architectural and workflow design flaws leave the application exposed even when code is implemented correctly.",
+      "keywords": ["insecure design", "threat modeling", "abuse case", "architecture"],
+      "guidance": "Apply threat modeling and abuse-case analysis early in design and change planning."
+    },
+    {
+      "control_id": "A07:2025",
+      "title": "Authentication Failures",
+      "category": "Application Security Risk",
+      "description": "Weak authentication flows allow attackers to impersonate users, reuse credentials, or hijack sessions.",
+      "keywords": ["authentication", "session management", "credential stuffing", "mfa"],
+      "guidance": "Strengthen identity proofing, MFA, session handling, and login abuse protections."
+    },
+    {
+      "control_id": "A08:2025",
+      "title": "Software or Data Integrity Failures",
+      "category": "Application Security Risk",
+      "description": "Applications trust code or data that can be altered without verification, enabling tampering and unsafe updates.",
+      "keywords": ["integrity", "tampering", "update trust", "deserialization"],
+      "guidance": "Verify integrity for code, packages, updates, and serialized or externally supplied data."
+    },
+    {
+      "control_id": "A09:2025",
+      "title": "Security Logging and Alerting Failures",
+      "category": "Application Security Risk",
+      "description": "Insufficient logging, monitoring, or alerting weakens detection, investigation, and response to attacks.",
+      "keywords": ["logging", "monitoring", "alerting", "detection"],
+      "guidance": "Log high-value security events with context and send them to monitored alerting workflows."
+    },
+    {
+      "control_id": "A10:2025",
+      "title": "Mishandling of Exceptional Conditions",
+      "category": "Application Security Risk",
+      "description": "Poor handling of errors, timeouts, resource exhaustion, and unusual edge cases can create exploitable behavior.",
+      "keywords": ["exception handling", "resource exhaustion", "timeout", "fault handling"],
+      "guidance": "Design failure paths explicitly so the application remains safe and observable under abnormal conditions."
+    }
+  ]
+}

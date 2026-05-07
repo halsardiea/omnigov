@@ -1,0 +1,651 @@
+{
+  "framework": {
+    "name": "Jordan National Cybersecurity Framework",
+    "version": "Current",
+    "description": "The Jordan National Cybersecurity Framework (JNCF), published by the National Cybersecurity Centre of Jordan (NCSC-JO), defines the cybersecurity capabilities required for Jordanian organisations. The framework is organised into six main capability groups, each containing multiple sub-capabilities that describe concrete practices organisations must establish.",
+    "is_active": true,
+    "source_url": "https://www.ncsc.jo/"
+  },
+  "controls": [
+    {
+      "control_id": "JNCF-AP",
+      "title": "Security in Architecture and Portfolio",
+      "category": "Architecture and Portfolio",
+      "description": "Ensures cybersecurity is embedded into the organisation's strategic planning, enterprise architecture, and service/product portfolio management. The goal is to design and govern all systems with security as a foundational requirement rather than an afterthought.",
+      "keywords": [
+        "architecture",
+        "portfolio",
+        "strategy",
+        "enterprise architecture"
+      ],
+      "guidance": "Integrate security requirements into architecture governance boards and portfolio review cycles."
+    },
+    {
+      "control_id": "JNCF-AP-1",
+      "title": "Strategy Management Capability",
+      "category": "Architecture and Portfolio",
+      "description": "Establish and maintain a cybersecurity strategy aligned with the organisation's business objectives. Define long-term security goals, roadmaps, and investment priorities that reflect evolving threats and organisational risk appetite.",
+      "keywords": [
+        "cybersecurity strategy",
+        "roadmap",
+        "security goals",
+        "investment",
+        "JNCF"
+      ],
+      "guidance": "Produce an annual cybersecurity strategy document approved by senior leadership; review it when the business strategy changes."
+    },
+    {
+      "control_id": "JNCF-AP-2",
+      "title": "Enterprise Architecture Management Capability",
+      "category": "Architecture and Portfolio",
+      "description": "Integrate security controls and requirements into the enterprise architecture framework. Ensure that architecture decisions—including cloud adoption, technology refresh, and application integration—are assessed for security impact.",
+      "keywords": [
+        "enterprise architecture",
+        "TOGAF",
+        "security architecture",
+        "JNCF"
+      ],
+      "guidance": "Require security architecture reviews at each enterprise architecture gate; document security patterns in the architecture repository."
+    },
+    {
+      "control_id": "JNCF-AP-3",
+      "title": "Portfolio Management Capability",
+      "category": "Architecture and Portfolio",
+      "description": "Manage the security posture of the entire portfolio of initiatives and projects. Ensure each project includes appropriate security requirements, resources, and risk treatment from initiation through delivery and beyond.",
+      "keywords": [
+        "portfolio management",
+        "project security",
+        "security requirements",
+        "JNCF"
+      ],
+      "guidance": "Add a security gate to all portfolio intake processes; track security debt across the portfolio dashboard."
+    },
+    {
+      "control_id": "JNCF-AP-4",
+      "title": "Product and Services Portfolio Capability",
+      "category": "Architecture and Portfolio",
+      "description": "Maintain visibility of the security posture of all products and services offered or operated by the organisation. Ensure that product lifecycle management includes security reviews, patching responsibilities, and end-of-life planning.",
+      "keywords": [
+        "product security",
+        "service catalog",
+        "lifecycle management",
+        "JNCF"
+      ],
+      "guidance": "Include security and privacy by design in product development standards; schedule regular security reviews for all live services."
+    },
+    {
+      "control_id": "JNCF-DEV",
+      "title": "Security in Development",
+      "category": "Development",
+      "description": "Embeds security practices throughout the software development lifecycle, from requirements and design through coding, testing, and release. Aims to produce software that is secure by design and free from common vulnerabilities.",
+      "keywords": [
+        "secure development",
+        "SDLC",
+        "DevSecOps",
+        "secure coding"
+      ],
+      "guidance": "Adopt a Secure Software Development Lifecycle (SSDLC) policy and enforce security checkpoints at each phase."
+    },
+    {
+      "control_id": "JNCF-DEV-1",
+      "title": "Requirements Management Capability",
+      "category": "Development",
+      "description": "Ensure that security and privacy requirements are defined, documented, and tracked alongside functional requirements. Security requirements should be derived from threat modeling, compliance obligations, and organisational policies.",
+      "keywords": [
+        "security requirements",
+        "requirements management",
+        "privacy",
+        "JNCF"
+      ],
+      "guidance": "Include a mandatory security requirements section in all project briefs; validate requirements against applicable standards."
+    },
+    {
+      "control_id": "JNCF-DEV-2",
+      "title": "Product and Team Backlog Capability",
+      "category": "Development",
+      "description": "Manage security-related work items alongside functional backlog items. Ensure security stories, bug fixes, and technical debt remediation are visible to stakeholders and prioritised in sprint planning.",
+      "keywords": [
+        "backlog",
+        "security stories",
+        "sprint",
+        "Agile security",
+        "JNCF"
+      ],
+      "guidance": "Add security acceptance criteria to every user story; dedicate a portion of each sprint to security backlog items."
+    },
+    {
+      "control_id": "JNCF-DEV-3",
+      "title": "Service and Product Design Capability",
+      "category": "Development",
+      "description": "Apply security design principles—such as least privilege, defence-in-depth, and secure defaults—during the design phase of services and products. Conduct threat modeling before implementation begins.",
+      "keywords": [
+        "secure design",
+        "threat modeling",
+        "least privilege",
+        "defence-in-depth",
+        "JNCF"
+      ],
+      "guidance": "Conduct structured threat modeling (STRIDE) for all new services; document design decisions and mitigations."
+    },
+    {
+      "control_id": "JNCF-DEV-4",
+      "title": "Secure Code Management Capability",
+      "category": "Development",
+      "description": "Establish practices for writing, reviewing, and managing secure source code. This includes secure coding standards, peer code review with security checks, static analysis (SAST), and management of code repositories with access controls.",
+      "keywords": [
+        "secure coding",
+        "code review",
+        "SAST",
+        "source code management",
+        "JNCF"
+      ],
+      "guidance": "Enforce coding standards, require peer review for all code changes, and run SAST tools as part of the CI pipeline."
+    },
+    {
+      "control_id": "JNCF-DEV-5",
+      "title": "Test Management Capability",
+      "category": "Development",
+      "description": "Integrate security testing into the test management process. This includes defining security test cases, conducting dynamic application security testing (DAST), penetration testing, and ensuring test environments do not use production data.",
+      "keywords": [
+        "DAST",
+        "security testing",
+        "test management",
+        "pentest",
+        "JNCF"
+      ],
+      "guidance": "Require security test cases in test plans; run DAST in staging environments; gate releases on security test pass."
+    },
+    {
+      "control_id": "JNCF-DEV-6",
+      "title": "CI/CD Pipeline Capability",
+      "category": "Development",
+      "description": "Secure the Continuous Integration and Continuous Delivery pipeline to prevent the introduction of vulnerabilities through the build, test, and deployment process. Include automated security checks (SAST, SCA, secrets scanning) as pipeline gates.",
+      "keywords": [
+        "CI/CD",
+        "pipeline security",
+        "DevSecOps",
+        "secrets scanning",
+        "JNCF"
+      ],
+      "guidance": "Add security scan stages (SAST, dependency check, secrets detection) to every CI/CD pipeline; block deployments on critical findings."
+    },
+    {
+      "control_id": "JNCF-DEV-7",
+      "title": "Defect Management Capability",
+      "category": "Development",
+      "description": "Establish a process for identifying, tracking, and remedying security defects throughout the development lifecycle. Security defects should be classified by severity and remediated within defined service-level objectives.",
+      "keywords": [
+        "defect management",
+        "bug tracking",
+        "vulnerability remediation",
+        "JNCF"
+      ],
+      "guidance": "Tag security defects in the issue tracker; set and track SLAs by severity; include security defect rates in team KPIs."
+    },
+    {
+      "control_id": "JNCF-DEV-8",
+      "title": "Build Management Capability",
+      "category": "Development",
+      "description": "Ensure that the build process produces artefacts that are cryptographically signed, traceable to verified source code, and free from unapproved components. Manage build environments as trusted, controlled systems.",
+      "keywords": [
+        "build security",
+        "artefact signing",
+        "supply chain",
+        "JNCF"
+      ],
+      "guidance": "Sign all build artefacts; maintain an artefact registry with provenance metadata; scan container images before publication."
+    },
+    {
+      "control_id": "JNCF-DEV-9",
+      "title": "Release Management Capability",
+      "category": "Development",
+      "description": "Control the release process to ensure only tested, approved, and security-reviewed software is deployed to production. Enforce change advisory board (CAB) or equivalent approval for production changes.",
+      "keywords": [
+        "release management",
+        "change control",
+        "CAB",
+        "production deployment",
+        "JNCF"
+      ],
+      "guidance": "Require security sign-off in the release approval process; maintain an audit trail of all production deployments."
+    },
+    {
+      "control_id": "JNCF-DEL",
+      "title": "Security in Delivery",
+      "category": "Delivery",
+      "description": "Addresses cybersecurity controls within operational delivery, covering how services are provisioned, configured, and handed over to operations. Security must be maintained through deployment, access management, secrets handling, and change management.",
+      "keywords": [
+        "delivery",
+        "deployment",
+        "operations",
+        "provisioning"
+      ],
+      "guidance": "Embed security checks into all delivery runbooks and provisioning pipelines."
+    },
+    {
+      "control_id": "JNCF-DEL-1",
+      "title": "Operations Management Capability",
+      "category": "Delivery",
+      "description": "Establish and maintain operational procedures for running systems securely. This includes standard operating procedures, runbooks, capacity management, and ensuring that operational changes do not introduce security vulnerabilities.",
+      "keywords": [
+        "operations management",
+        "runbooks",
+        "SOP",
+        "JNCF"
+      ],
+      "guidance": "Maintain security runbooks for all critical systems; include security tasks in operational checklists and change procedures."
+    },
+    {
+      "control_id": "JNCF-DEL-2",
+      "title": "Resource Management Capability",
+      "category": "Delivery",
+      "description": "Ensure that compute, storage, and network resources are provisioned securely and that resource configurations are maintained in a compliant state. Apply security baselines to all provisioned resources using infrastructure-as-code where possible.",
+      "keywords": [
+        "resource provisioning",
+        "cloud security",
+        "infrastructure-as-code",
+        "JNCF"
+      ],
+      "guidance": "Use IaC templates with security hardening built in; scan provisioned resources for compliance drift continuously."
+    },
+    {
+      "control_id": "JNCF-DEL-3",
+      "title": "Automated Remediation Capability",
+      "category": "Delivery",
+      "description": "Implement automated mechanisms to detect and remediate configuration drift, compliance violations, and known security issues in operational environments. Automated remediation reduces mean time to remediate (MTTR) for common security issues.",
+      "keywords": [
+        "automated remediation",
+        "configuration drift",
+        "MTTR",
+        "JNCF"
+      ],
+      "guidance": "Deploy policy-as-code tools (AWS Config Rules, Azure Policy) with auto-remediation; test remediation playbooks regularly."
+    },
+    {
+      "control_id": "JNCF-DEL-4",
+      "title": "Request Management Capability",
+      "category": "Delivery",
+      "description": "Manage service requests in a controlled and auditable manner. All requests for access, resources, or configuration changes should be authorised, tracked, and fulfilled through a defined workflow with appropriate security reviews.",
+      "keywords": [
+        "service request",
+        "ITSM",
+        "access request",
+        "JNCF"
+      ],
+      "guidance": "Require approval for all access and resource requests; log all requests and their approvals in the ITSM system."
+    },
+    {
+      "control_id": "JNCF-DEL-5",
+      "title": "Change Management Capability",
+      "category": "Delivery",
+      "description": "Ensure that all changes to production systems are assessed for security impact, approved through a change control process, and logged. Emergency changes should follow an expedited but auditable process with post-change review.",
+      "keywords": [
+        "change management",
+        "change control",
+        "CAB",
+        "security impact",
+        "JNCF"
+      ],
+      "guidance": "Mandate security impact assessment for all changes; classify changes by risk and require appropriate approval levels."
+    },
+    {
+      "control_id": "JNCF-DEL-6",
+      "title": "Identity and Access Management Capability",
+      "category": "Delivery",
+      "description": "Manage identities, authentication, and authorisation for all systems and users. Implement least-privilege access, multi-factor authentication, and centralised identity management to reduce the risk of unauthorised access.",
+      "keywords": [
+        "IAM",
+        "identity management",
+        "MFA",
+        "least privilege",
+        "JNCF"
+      ],
+      "guidance": "Deploy a centralised IdP with MFA; enforce least-privilege RBAC; conduct quarterly access reviews for all systems."
+    },
+    {
+      "control_id": "JNCF-DEL-7",
+      "title": "Deployment and Provisioning Capability",
+      "category": "Delivery",
+      "description": "Establish secure deployment practices for applications and infrastructure. Deployments should be automated, repeatable, and validated against security baselines before traffic is routed to newly provisioned resources.",
+      "keywords": [
+        "deployment",
+        "provisioning",
+        "blue-green",
+        "canary release",
+        "JNCF"
+      ],
+      "guidance": "Use automated deployment pipelines with security validation gates; implement rollback procedures for failed or insecure deployments."
+    },
+    {
+      "control_id": "JNCF-DEL-8",
+      "title": "Secrets Management Capability",
+      "category": "Delivery",
+      "description": "Securely store, distribute, and rotate cryptographic keys, API tokens, passwords, and other secrets used by applications and infrastructure. Eliminate hard-coded credentials and enforce programmatic retrieval from a centralised secrets store.",
+      "keywords": [
+        "secrets management",
+        "key management",
+        "API keys",
+        "HashiCorp Vault",
+        "JNCF"
+      ],
+      "guidance": "Deploy a secrets management platform (Vault, AWS Secrets Manager); rotate secrets regularly; scan code for hard-coded credentials."
+    },
+    {
+      "control_id": "JNCF-OPS",
+      "title": "Security in Operations",
+      "category": "Operations",
+      "description": "Covers the ongoing operational security capabilities required to maintain the confidentiality, integrity, and availability of systems in production. Encompasses monitoring, incident response, threat intelligence, and continuity management.",
+      "keywords": [
+        "operations",
+        "monitoring",
+        "incident response",
+        "SIEM"
+      ],
+      "guidance": "Maintain 24/7 security monitoring capabilities; define clear escalation and response procedures for security events."
+    },
+    {
+      "control_id": "JNCF-OPS-1",
+      "title": "Service Level Management Capability",
+      "category": "Operations",
+      "description": "Define, monitor, and enforce service level agreements (SLAs) that include security availability and response time requirements. Security SLAs should cover incident response times, patch application windows, and system availability.",
+      "keywords": [
+        "SLA",
+        "service level",
+        "availability",
+        "JNCF"
+      ],
+      "guidance": "Include security metrics (MTTD, MTTR) in SLA definitions; review SLA compliance monthly with operations leadership."
+    },
+    {
+      "control_id": "JNCF-OPS-2",
+      "title": "Incident Management Capability",
+      "category": "Operations",
+      "description": "Establish and maintain a capability to detect, report, classify, contain, eradicate, and recover from cybersecurity incidents. Incident response plans must be documented, exercised, and continuously improved based on lessons learned.",
+      "keywords": [
+        "incident response",
+        "CIRT",
+        "incident management",
+        "containment",
+        "JNCF"
+      ],
+      "guidance": "Maintain a tested incident response plan; conduct tabletop exercises at least annually; assign roles and escalation paths."
+    },
+    {
+      "control_id": "JNCF-OPS-3",
+      "title": "Problem Management Capability",
+      "category": "Operations",
+      "description": "Identify and address the root causes of recurring security incidents and operational problems. Problem management prevents incident recurrence by implementing permanent fixes and improving resilience.",
+      "keywords": [
+        "problem management",
+        "root cause",
+        "ITIL",
+        "recurrence prevention",
+        "JNCF"
+      ],
+      "guidance": "Track recurring security incidents in a problem log; conduct root cause analysis and close problems with verified solutions."
+    },
+    {
+      "control_id": "JNCF-OPS-4",
+      "title": "Event Management Capability",
+      "category": "Operations",
+      "description": "Collect, filter, correlate, and act upon security events generated by systems, applications, and network infrastructure. An effective event management capability distinguishes false positives from genuine security events that require action.",
+      "keywords": [
+        "SIEM",
+        "event management",
+        "log correlation",
+        "alert triage",
+        "JNCF"
+      ],
+      "guidance": "Deploy a SIEM with tuned correlation rules; establish an event triage process with defined response times per severity."
+    },
+    {
+      "control_id": "JNCF-OPS-5",
+      "title": "Monitoring Capability",
+      "category": "Operations",
+      "description": "Maintain continuous monitoring of systems, networks, and user activity to detect security anomalies, policy violations, and threat indicators in real time. Monitoring should cover endpoints, network traffic, cloud environments, and applications.",
+      "keywords": [
+        "security monitoring",
+        "SOC",
+        "EDR",
+        "network monitoring",
+        "JNCF"
+      ],
+      "guidance": "Implement 24/7 monitoring with automated alerting; establish baselines for normal behaviour and alert on deviations."
+    },
+    {
+      "control_id": "JNCF-OPS-6",
+      "title": "Configuration Management Capability",
+      "category": "Operations",
+      "description": "Maintain an authoritative configuration baseline for all systems and detect/remediate drift from those baselines. Configuration management ensures that systems remain in a known, secure state throughout their operational life.",
+      "keywords": [
+        "configuration management",
+        "CMDB",
+        "configuration drift",
+        "baseline",
+        "JNCF"
+      ],
+      "guidance": "Use CMDB-backed configuration compliance tools; remediate configuration drift automatically or through ticketed workflows."
+    },
+    {
+      "control_id": "JNCF-OPS-7",
+      "title": "Fraud and Forensics Investigations Capability",
+      "category": "Operations",
+      "description": "Establish procedures for conducting forensic investigations of suspected security incidents, fraud, and policy violations. Forensic capability must preserve evidence integrity and support legal proceedings where required.",
+      "keywords": [
+        "forensics",
+        "digital forensics",
+        "evidence preservation",
+        "fraud investigation",
+        "JNCF"
+      ],
+      "guidance": "Train a forensic response team; maintain forensic toolkits; follow chain-of-custody procedures for all evidence."
+    },
+    {
+      "control_id": "JNCF-OPS-8",
+      "title": "Continuity Management Capability",
+      "category": "Operations",
+      "description": "Develop, test, and maintain business continuity and disaster recovery plans that address cybersecurity scenarios. Continuity plans must define recovery time objectives (RTOs), recovery point objectives (RPOs), and fallback procedures for critical systems.",
+      "keywords": [
+        "BCP",
+        "DRP",
+        "disaster recovery",
+        "RTO",
+        "RPO",
+        "JNCF"
+      ],
+      "guidance": "Test BCP/DRP scenarios annually including cyber incident scenarios; validate RTO/RPO targets against actual recovery tests."
+    },
+    {
+      "control_id": "JNCF-OPS-9",
+      "title": "Threat Intelligence Capability",
+      "category": "Operations",
+      "description": "Gather, analyse, and operationalise threat intelligence to improve the organisation's detection and response capabilities. Threat intelligence should be integrated into SIEM rules, vulnerability prioritisation, and incident response playbooks.",
+      "keywords": [
+        "threat intelligence",
+        "CTI",
+        "IOC",
+        "TTP",
+        "JNCF"
+      ],
+      "guidance": "Subscribe to relevant threat intelligence feeds (NCSC-JO, ISACs); integrate IOCs into SIEM and firewall block lists."
+    },
+    {
+      "control_id": "JNCF-OPS-10",
+      "title": "Data Management Capability",
+      "category": "Operations",
+      "description": "Manage operational data with appropriate security and privacy controls. This includes data classification, access controls, retention policies, secure disposal, and compliance with applicable data protection laws and regulations.",
+      "keywords": [
+        "data management",
+        "data classification",
+        "retention",
+        "data protection",
+        "JNCF"
+      ],
+      "guidance": "Enforce data classification and handling policies operationally; audit data access logs and review retention compliance quarterly."
+    },
+    {
+      "control_id": "JNCF-FND",
+      "title": "Fundamental Capabilities",
+      "category": "Fundamental",
+      "description": "The foundational governance, risk, compliance, and enabling capabilities that underpin all other JNCF capability areas. These cross-cutting capabilities provide the management framework within which cybersecurity activities are governed, funded, and executed.",
+      "keywords": [
+        "governance",
+        "risk management",
+        "compliance",
+        "policy"
+      ],
+      "guidance": "Establish a governance structure with clear accountability for each fundamental capability."
+    },
+    {
+      "control_id": "JNCF-FND-1",
+      "title": "Policy Management Capability",
+      "category": "Fundamental",
+      "description": "Develop, approve, communicate, and maintain the cybersecurity policies that direct organisational behaviour. Policies must be reviewed regularly, aligned with applicable laws and standards, and enforced through technical and procedural controls.",
+      "keywords": [
+        "policy management",
+        "security policy",
+        "governance",
+        "JNCF"
+      ],
+      "guidance": "Establish a policy lifecycle (draft, review, approve, publish, retire); review all cybersecurity policies annually."
+    },
+    {
+      "control_id": "JNCF-FND-2",
+      "title": "Risk and Compliance Management Capability",
+      "category": "Fundamental",
+      "description": "Identify, assess, treat, and monitor cybersecurity risks systematically. Maintain compliance with applicable national regulations, international standards, and contractual obligations. Produce a risk register and track treatment plans to closure.",
+      "keywords": [
+        "risk management",
+        "compliance",
+        "risk register",
+        "ISO 31000",
+        "JNCF"
+      ],
+      "guidance": "Conduct annual risk assessments; maintain a live risk register with owners; map controls to compliance requirements."
+    },
+    {
+      "control_id": "JNCF-FND-3",
+      "title": "Audit Management Capability",
+      "category": "Fundamental",
+      "description": "Plan and conduct internal and external cybersecurity audits to verify compliance with policies, standards, and regulations. Audit findings must be tracked, remediated within defined timelines, and reported to leadership.",
+      "keywords": [
+        "audit",
+        "internal audit",
+        "compliance audit",
+        "findings",
+        "JNCF"
+      ],
+      "guidance": "Establish an annual audit plan covering key controls; track all audit findings to closure with evidence of remediation."
+    },
+    {
+      "control_id": "JNCF-FND-4",
+      "title": "Vendor and Contract Management Capability",
+      "category": "Fundamental",
+      "description": "Manage third-party and supply chain cybersecurity risks through vendor due diligence, contractual security requirements, ongoing monitoring, and secure off-boarding. Assess vendors based on the sensitivity of data and systems they can access.",
+      "keywords": [
+        "vendor management",
+        "supply chain",
+        "third-party risk",
+        "contract",
+        "JNCF"
+      ],
+      "guidance": "Classify vendors by risk tier; include security clauses in all contracts; conduct periodic vendor security assessments."
+    },
+    {
+      "control_id": "JNCF-FND-5",
+      "title": "Workforce Management Capability",
+      "category": "Fundamental",
+      "description": "Manage the human factors of cybersecurity, including background checks, security awareness training, role-based training, and disciplinary procedures for policy violations. Build a security-conscious culture throughout the organisation.",
+      "keywords": [
+        "workforce security",
+        "security awareness",
+        "training",
+        "background check",
+        "JNCF"
+      ],
+      "guidance": "Conduct background checks before employment; require annual security awareness training; track completion rates."
+    },
+    {
+      "control_id": "JNCF-FND-6",
+      "title": "Legal Management Capability",
+      "category": "Fundamental",
+      "description": "Ensure that the organisation's cybersecurity practices comply with Jordanian cybercrime law, data protection regulations, and sector-specific requirements. Engage legal counsel in incident response, regulatory disclosures, and contract reviews.",
+      "keywords": [
+        "legal compliance",
+        "cybercrime law",
+        "data protection",
+        "regulation",
+        "JNCF"
+      ],
+      "guidance": "Map cybersecurity obligations to applicable Jordanian and international laws; engage legal counsel in incident disclosures."
+    },
+    {
+      "control_id": "JNCF-FND-7",
+      "title": "Facility Management Capability",
+      "category": "Fundamental",
+      "description": "Protect physical infrastructure, data centres, and office environments from physical threats. Physical security controls must complement logical security controls to prevent unauthorised physical access to systems and data.",
+      "keywords": [
+        "physical security",
+        "data centre",
+        "access control",
+        "facility",
+        "JNCF"
+      ],
+      "guidance": "Implement layered physical access controls for data centres; conduct physical security assessments annually."
+    },
+    {
+      "control_id": "JNCF-FND-8",
+      "title": "Intelligence and Reporting Capability",
+      "category": "Fundamental",
+      "description": "Produce and distribute cybersecurity intelligence, metrics, and reports to leadership, regulators, and stakeholders. Reporting must provide actionable insights into the organisation's security posture, incident trends, and control effectiveness.",
+      "keywords": [
+        "reporting",
+        "metrics",
+        "KPIs",
+        "security dashboard",
+        "JNCF"
+      ],
+      "guidance": "Define a cybersecurity metrics framework; produce monthly security reports for management and quarterly reports for the board."
+    },
+    {
+      "control_id": "JNCF-NCR",
+      "title": "Security in National Cyber Responsibility",
+      "category": "National Cyber Responsibility",
+      "description": "Addresses the organisation's responsibilities as a participant in Jordan's national cybersecurity ecosystem. Organisations are expected to contribute to national cyber resilience through information sharing, capacity building, and supporting the development of national cybersecurity products and skills.",
+      "keywords": [
+        "national cybersecurity",
+        "NCSC-JO",
+        "cyber resilience",
+        "information sharing"
+      ],
+      "guidance": "Engage with NCSC-JO and sectoral CERTs; participate in national cyber exercises and information-sharing programmes."
+    },
+    {
+      "control_id": "JNCF-NCR-1",
+      "title": "Capacity Building Capability",
+      "category": "National Cyber Responsibility",
+      "description": "Contribute to building national cybersecurity capacity by training cybersecurity professionals, participating in awareness campaigns, and supporting educational institutions in developing cybersecurity programmes. Share expertise and resources with the broader Jordanian cybersecurity community.",
+      "keywords": [
+        "capacity building",
+        "training",
+        "awareness",
+        "education",
+        "JNCF"
+      ],
+      "guidance": "Partner with universities and vocational institutions; mentor junior cybersecurity professionals; participate in national exercises."
+    },
+    {
+      "control_id": "JNCF-NCR-2",
+      "title": "National Product Development Capability",
+      "category": "National Cyber Responsibility",
+      "description": "Support the development of Jordanian cybersecurity products, tools, and services. Organisations should where possible prefer locally developed or nationally endorsed cybersecurity solutions, contributing to Jordan's technology sovereignty and resilience.",
+      "keywords": [
+        "national products",
+        "technology sovereignty",
+        "local development",
+        "JNCF"
+      ],
+      "guidance": "Evaluate Jordanian cybersecurity vendors in procurement processes; contribute requirements and feedback to national product development initiatives."
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+.venv-linux/
+venv/
+ENV/
+
+# Django runtime files
+db.sqlite3
+db.sqlite3-journal
+*.log
+local_settings.py
+
+# Media and static (collected at runtime / build)
+/media/
+/staticfiles/
+
+# Secrets — NEVER bake these into the image
+.env
+
+# Development/test artifacts
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+test-media/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker data volumes (local dirs)
+gvm_data/
+postgres_data/
+
+# Node
+node_modules/
+
+# Docs
+*.docx
+*.pdf
+SETUP.md

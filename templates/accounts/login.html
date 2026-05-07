@@ -6,9 +6,8 @@
 <div class="min-h-screen bg-[radial-gradient(circle_at_top_right,_rgba(215,255,104,0.12),_transparent_26%),linear-gradient(180deg,_#08111f_0%,_#0b1424_100%)]">
     <header class="border-b border-white/10">
         <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-            <a href="{% url 'accounts:login' %}"><img src="{% static 'images/OmniGov_logo.png' %}" alt="OmniGov" class="h-28 w-auto max-w-none"></a>
+            <a href="{% url 'accounts:login' %}"><img src="{% static 'images/OmniGov_logo_cropped.png' %}" alt="OmniGov" class="h-20 w-auto max-w-none"></a>
             <div class="flex items-center gap-3">
-                <a href="{% url 'accounts:register' %}" class="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm text-white transition hover:bg-white/[0.08]">Create account</a>
             </div>
         </div>
     </header>
@@ -36,6 +35,11 @@
                 {% endfor %}
             </div>
             {% endif %}
+            {% if form.non_field_errors %}
+            <div class="mt-4 rounded-2xl border border-red-400/20 bg-red-400/10 p-3 text-sm text-red-100">
+                {{ form.non_field_errors.0 }}
+            </div>
+            {% endif %}
             <form method="post" class="mt-8 space-y-5">
                 {% csrf_token %}
                 <div>
@@ -51,7 +55,6 @@
                 <button type="submit" class="w-full rounded-2xl bg-[#d7ff68] px-4 py-3.5 font-semibold text-slate-950 shadow-[0_16px_36px_rgba(215,255,104,0.24)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#e7ff95] active:scale-[0.98]">Sign in to OmniGov</button>
             </form>
             <p class="mt-6 text-center text-sm text-[#9ab0d0]">
-                Don't have an account? <a href="{% url 'accounts:register' %}" class="text-[#d7ff68] transition hover:text-[#e7ff95]">Register</a>
             </p>
         </section>
     </main>

@@ -6,12 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}OmniGov{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
-<body class="min-h-full bg-[#08111f] text-white antialiased">
+<body class="min-h-full bg-[#060d1a] text-white antialiased">
     {% block body %}
-    <div class="min-h-screen bg-[linear-gradient(180deg,_#08111f_0%,_#0b1424_100%)] lg:flex">
-        {% include "includes/sidebar.html" %}
+    <div class="og-app-shell min-h-screen bg-[#060d1a] lg:flex">
+        <div id="sidebar-root">
+            {% include "includes/sidebar.html" %}
+        </div>
         <div class="flex flex-1 flex-col">
             {% if messages %}
             <div class="px-6 pt-4">

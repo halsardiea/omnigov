@@ -62,8 +62,16 @@ server.log
 /frontend/
 /frontendghaziteezi/
 
-# Pytest cache
+# Pytest / test infrastructure
 .pytest_cache/
+
+# Test suites and test media (not part of the deployable project)
+tests/
+test-media/
+
+# Log files — kept out of the repo; folder structure is preserved via .gitkeep
+logs/*.log
+logs/**/*.log
 
 # GitHub agents
 .github/

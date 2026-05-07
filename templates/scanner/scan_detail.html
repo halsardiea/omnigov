@@ -2,13 +2,14 @@
 {% block title %}{{ scan.name }} — OmniGov{% endblock %}
 
 {% block content %}
-<header class="border-b border-white/10 bg-[#08111f]/90">
-    <div class="flex items-center justify-between px-6 py-5">
+<header class="border-b border-white/10 bg-[#060d1a]/90 backdrop-blur">
+    <div class="flex flex-wrap items-center justify-between gap-4 px-6 py-5">
         <div>
             <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">Scan Detail</p>
-            <h1 class="mt-3 text-4xl font-semibold tracking-tight">{{ scan.name }}</h1>
+            <h1 class="og-page-title mt-3 text-4xl font-semibold tracking-tight">{{ scan.name }}</h1>
+            <p class="mt-2 text-sm text-[#9ab0d0]">{{ scan.framework_names }}</p>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3">
             <span class="rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]
                 {% if scan.status == 'analyzed' or scan.status == 'completed' %}border-green-400/20 bg-green-400/10 text-green-300
                 {% elif scan.status == 'running' or scan.status == 'analyzing' %}border-amber-400/20 bg-amber-400/10 text-amber-300
@@ -16,117 +17,432 @@
                 {% else %}border-slate-400/20 bg-slate-400/10 text-slate-300{% endif %}">
                 {{ scan.get_status_display }}
             </span>
-            {% if scan.status == 'running' %}
-            <form method="post" action="{% url 'scanner:scan-stop' scan.pk %}">
-                {% csrf_token %}
-                <button type="submit" class="rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm font-medium text-red-100 transition hover:bg-red-400/15">Stop scan</button>
-            </form>
+            {% if can_manage_scans and scan.status == 'running' %}
+            <button type="button" id="stop-scan-btn" class="rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm font-medium text-red-100 transition hover:bg-red-400/15">Stop scan</button>
             {% endif %}
             <a href="{% url 'scanner:scan-list' %}" class="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white transition hover:bg-white/[0.08]">Back to scans</a>
         </div>
     </div>
 </header>
 
-<main class="flex-1 px-6 py-8">
-    <div class="grid gap-6 xl:grid-cols-4">
+<main class="flex-1 space-y-6 px-6 py-8">
+    <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
             <p class="text-sm text-[#9ab0d0]">Created</p>
             <p class="mt-3 text-xl font-semibold">{{ scan.created_at|date:"M d, Y H:i" }}</p>
+            <p class="mt-1 text-xs text-[#9ab0d0]">Launched by {{ scan.created_by.get_full_name|default:scan.created_by.email }}</p>
         </div>
         <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
-            <p class="text-sm text-[#9ab0d0]">Progress</p>
-            <p class="mt-3 text-xl font-semibold" id="progress-pct">{{ scan.progress|default:"0" }}%</p>
+            <p class="text-sm text-[#9ab0d0]">Frameworks</p>
+            <div class="mt-3 space-y-2">
+                {% for framework in scan.selected_framework_list %}
+                <p class="text-sm font-semibold text-white">{{ framework.name }} <span class="text-xs font-medium text-[#9ab0d0]">v{{ framework.version }}</span></p>
+                {% endfor %}
+            </div>
+            <p class="mt-2 text-xs text-[#9ab0d0]">{{ scan.framework_count }} framework{{ scan.framework_count|pluralize }} selected</p>
         </div>
         <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
             <p class="text-sm text-[#9ab0d0]">Findings</p>
-            <p class="mt-3 text-xl font-semibold">{{ scan.findings_count }} Parsed</p>
+            <p class="mt-3 text-xl font-semibold">
+                {% if severity_counts.total %}
+                {{ severity_counts.total }} total
+                {% elif scan.status == 'running' or scan.status == 'analyzing' %}
+                Pending
+                {% else %}
+                0 total
+                {% endif %}
+            </p>
+            <p class="mt-1 text-xs text-[#9ab0d0]">{{ severity_counts.critical }} critical · {{ severity_counts.high }} high · {{ severity_counts.medium }} medium</p>
         </div>
         <div class="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
-            <p class="text-sm text-[#9ab0d0]">Reports</p>
-            <p class="mt-3 text-xl font-semibold">{{ scan.reports.count }} Ready</p>
+            <p class="text-sm text-[#9ab0d0]">Target</p>
+            <p class="mt-3 break-all font-mono text-xl font-semibold">{{ scan.target }}</p>
+            <p class="mt-1 text-xs text-[#9ab0d0]">Config {{ scan.scan_config }} · {{ reports.count }} reports</p>
         </div>
     </div>
 
-    {% if scan.status == 'running' or scan.status == 'analyzing' %}
-    <section class="mt-6 rounded-[30px] border border-white/10 bg-white/[0.04] p-6" id="scan-progress-container">
-        <div class="flex items-center justify-between">
-            <p class="text-sm font-medium text-white" id="progress-label">
-                {% if scan.status == 'running' %}Scanning in progress...{% else %}AI analysis in progress...{% endif %}
-            </p>
-            <p class="text-sm text-[#9ab0d0]" id="progress-pct-bar">{{ scan.progress|default:"0" }}%</p>
+    <section class="rounded-[30px] border border-white/10 bg-white/[0.04] p-6" id="scan-progress-container" data-scan-status="{{ scan.status }}" data-scan-progress="{{ scan.progress|default:'0' }}">
+        <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h2 class="text-lg font-semibold text-white">Scan Progress</h2>
+                <p class="mt-1 text-sm text-[#8ba5c2]" id="progress-label">{{ progress_label }}</p>
+            </div>
+            <p class="text-sm font-semibold text-[#d4ff47]" id="progress-pct">{{ scan.progress|default:"0" }}%</p>
         </div>
-        <div class="mt-4 h-3 rounded-full bg-white/10">
-            <div class="h-3 rounded-full bg-[#d7ff68] shadow-[0_0_24px_rgba(215,255,104,0.4)] transition-all duration-500" id="progress-bar" style="width: {{ scan.progress|default:'0' }}%"></div>
+
+        <div class="relative flex items-start gap-0" id="pipeline-steps">
+            <div class="absolute left-[18px] right-[18px] top-[18px] h-[2px] rounded-full bg-white/10"></div>
+            <div id="pipeline-track-fill" class="absolute left-[18px] top-[18px] h-[2px] rounded-full bg-[linear-gradient(90deg,#6adf2a,#d4ff47)] shadow-[0_0_10px_rgba(212,255,71,0.4)] transition-all duration-700"></div>
+
+            <div class="pipeline-step relative z-10 flex flex-1 flex-col items-center gap-2" data-threshold="0">
+                <div class="pipeline-step-dot flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05]"></div>
+                <span class="pipeline-step-label text-[11px] font-semibold uppercase tracking-[0.08em] text-[#4d6683]">Discover</span>
+            </div>
+            <div class="pipeline-step relative z-10 flex flex-1 flex-col items-center gap-2" data-threshold="15">
+                <div class="pipeline-step-dot flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05]"></div>
+                <span class="pipeline-step-label text-[11px] font-semibold uppercase tracking-[0.08em] text-[#4d6683]">Scan</span>
+            </div>
+            <div class="pipeline-step relative z-10 flex flex-1 flex-col items-center gap-2" data-threshold="60">
+                <div class="pipeline-step-dot flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05]"></div>
+                <span class="pipeline-step-label text-[11px] font-semibold uppercase tracking-[0.08em] text-[#4d6683]">Parse</span>
+            </div>
+            <div class="pipeline-step relative z-10 flex flex-1 flex-col items-center gap-2" data-threshold="85">
+                <div class="pipeline-step-dot flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05]"></div>
+                <span class="pipeline-step-label text-[11px] font-semibold uppercase tracking-[0.08em] text-[#4d6683]">Map</span>
+            </div>
+            <div class="pipeline-step relative z-10 flex flex-1 flex-col items-center gap-2" data-threshold="100">
+                <div class="pipeline-step-dot flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05]"></div>
+                <span class="pipeline-step-label text-[11px] font-semibold uppercase tracking-[0.08em] text-[#4d6683]">Report</span>
+            </div>
+        </div>
+
+        <div class="mt-6 h-1 rounded-full bg-white/10">
+            <div class="h-1 rounded-full bg-[#d7ff68] transition-all duration-700" id="progress-bar" style="width: {{ scan.progress|default:'0' }}%"></div>
         </div>
     </section>
-    {% endif %}
 
     {% if scan.error_message %}
-    <section class="mt-6 rounded-[30px] border border-red-400/20 bg-red-400/10 p-6">
+    <section class="rounded-[30px] border border-red-400/20 bg-red-400/10 p-6">
         <p class="text-sm font-medium text-red-100">Error: {{ scan.error_message }}</p>
     </section>
     {% endif %}
 
-    {% if findings %}
-    <section class="mt-6 overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.04]">
-        <div class="border-b border-white/10 px-6 py-5">
-            <h2 class="text-xl font-semibold">Findings ({{ findings|length }})</h2>
-        </div>
-        <table class="min-w-full divide-y divide-white/10">
-            <thead class="bg-white/[0.02] text-left text-xs uppercase tracking-[0.2em] text-[#9ab0d0]">
-                <tr>
-                    <th class="px-6 py-4">Finding</th>
-                    <th class="px-6 py-4">Severity</th>
-                    <th class="px-6 py-4">CVSS</th>
-                    <th class="px-6 py-4">Host</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-white/10 text-sm text-[#c9d5e7]">
-                {% for finding in findings %}
-                <tr class="transition hover:bg-white/[0.03]">
-                    <td class="px-6 py-4">
-                        <p class="font-medium text-white">{{ finding.name|truncatechars:80 }}</p>
-                        {% if finding.cve_ids %}<p class="mt-1 font-mono text-xs text-[#9ab0d0]">{{ finding.cve_ids|join:", " }}</p>{% endif %}
-                    </td>
-                    <td class="px-6 py-4">
-                        <span class="rounded-full border px-3 py-1 text-xs font-semibold
-                            {% if finding.severity == 'Critical' %}border-purple-400/20 bg-purple-400/10 text-purple-300
-                            {% elif finding.severity == 'High' %}border-red-400/20 bg-red-400/10 text-red-300
-                            {% elif finding.severity == 'Medium' %}border-amber-400/20 bg-amber-400/10 text-amber-300
-                            {% elif finding.severity == 'Low' %}border-blue-400/20 bg-blue-400/10 text-blue-300
-                            {% else %}border-slate-400/20 bg-slate-400/10 text-slate-300{% endif %}">
-                            {{ finding.severity }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4">{{ finding.cvss_score|default:"—" }}</td>
-                    <td class="px-6 py-4 font-mono">{{ finding.host }}{% if finding.port %}:{{ finding.port }}{% endif %}</td>
-                </tr>
+    {% if reports %}
+        {% if scan.status == 'analyzed' or scan.status == 'completed' %}
+        <section id="reports-ready" class="rounded-[30px] border border-[#d7ff68]/20 bg-[#d7ff68]/[0.04] p-6">
+            <div class="mb-5 flex items-center gap-3">
+                <div class="flex h-9 w-9 items-center justify-center rounded-xl border border-[#d7ff68]/25 bg-[#d7ff68]/10">
+                    <svg class="h-5 w-5 text-[#d7ff68]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 3.75h6l4.5 4.5v10.5A1.5 1.5 0 0 1 16.5 20.25h-9A1.5 1.5 0 0 1 6 18.75v-13.5A1.5 1.5 0 0 1 7.5 3.75Z"/></svg>
+                </div>
+                <h2 class="text-xl font-semibold text-white">Reports Ready</h2>
+            </div>
+            <div class="grid gap-4 md:grid-cols-2">
+                {% for report in reports %}
+                <div class="rounded-2xl border {% if report.report_type == 'executive' %}border-blue-400/20 bg-blue-400/[0.05]{% else %}border-slate-400/20 bg-white/[0.03]{% endif %} p-5">
+                    <div class="flex items-center justify-between gap-3">
+                        <p class="font-semibold text-white">{{ report.title|default:report.get_report_type_display }}</p>
+                        <span class="rounded-full border {% if report.report_type == 'executive' %}border-blue-400/20 bg-blue-400/10 text-blue-300{% else %}border-slate-400/20 bg-slate-400/10 text-slate-300{% endif %} px-2.5 py-0.5 text-xs font-semibold">{{ report.get_format_display }}</span>
+                    </div>
+                    <p class="mt-2 text-sm text-[#9ab0d0]">{{ report.get_report_type_display }}</p>
+                    {% if report.effective_framework %}<p class="mt-1 text-xs text-[#8ba5c2]">Framework {{ report.effective_framework.name }} {{ report.effective_framework.version }}</p>{% endif %}
+                    {% if report.compliance_score %}<p class="mt-3 text-sm font-semibold text-[#d7ff68]">Compliance score: {{ report.compliance_score|floatformat:0 }}%</p>{% endif %}
+                    <div class="mt-4 flex items-center justify-between gap-3">
+                        <p class="text-sm text-[#9ab0d0]">Generated {{ report.generated_at|date:"M d, Y H:i" }}</p>
+                        <a href="{% url 'reports:report-download' report.pk %}" class="rounded-xl bg-[#d7ff68] px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-[#e7ff95]">Download</a>
+                    </div>
+                </div>
                 {% endfor %}
-            </tbody>
-        </table>
+            </div>
+        </section>
+        {% endif %}
+    {% endif %}
+
+    <section class="overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.04]">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-6 py-5">
+            <h2 class="text-xl font-semibold">Findings <span class="text-[#9ab0d0]">({{ severity_counts.total }})</span></h2>
+            {% if findings %}
+            <div class="flex flex-wrap gap-1.5">
+                <button type="button" class="finding-filter-btn rounded-xl border border-white/20 bg-white/[0.08] px-3 py-1.5 text-xs font-semibold text-white" onclick="applyFindingFilter('all', this)">All ({{ severity_counts.total }})</button>
+                <button type="button" class="finding-filter-btn rounded-xl border border-transparent px-3 py-1.5 text-xs font-semibold text-[#9ab0d0] transition hover:bg-white/[0.05]" onclick="applyFindingFilter('critical', this)">Critical ({{ severity_counts.critical }})</button>
+                <button type="button" class="finding-filter-btn rounded-xl border border-transparent px-3 py-1.5 text-xs font-semibold text-[#9ab0d0] transition hover:bg-white/[0.05]" onclick="applyFindingFilter('high', this)">High ({{ severity_counts.high }})</button>
+                <button type="button" class="finding-filter-btn rounded-xl border border-transparent px-3 py-1.5 text-xs font-semibold text-[#9ab0d0] transition hover:bg-white/[0.05]" onclick="applyFindingFilter('medium', this)">Medium ({{ severity_counts.medium }})</button>
+                <button type="button" class="finding-filter-btn rounded-xl border border-transparent px-3 py-1.5 text-xs font-semibold text-[#9ab0d0] transition hover:bg-white/[0.05]" onclick="applyFindingFilter('low', this)">Low ({{ severity_counts.low }})</button>
+            </div>
+            {% endif %}
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-white/10">
+                <thead class="bg-white/[0.02] text-left text-xs uppercase tracking-[0.2em] text-[#9ab0d0]">
+                    <tr>
+                        <th class="px-6 py-4">Finding</th>
+                        <th class="px-6 py-4">Severity</th>
+                        <th class="px-6 py-4">CVSS</th>
+                        <th class="px-6 py-4">Host</th>
+                    </tr>
+                </thead>
+                <tbody id="findings-tbody" class="divide-y divide-white/10 text-sm text-[#c9d5e7]">
+                    {% for finding in findings %}
+                    <tr class="transition hover:bg-white/[0.03]" data-finding-severity="{{ finding.severity|lower }}">
+                        <td class="px-6 py-4">
+                            <div class="flex items-start gap-2">
+                                <button type="button" onclick="toggleRemediation('finding-{{ forloop.counter }}', this)" class="mt-1 text-[#9ab0d0] transition hover:text-[#d7ff68]">
+                                    <svg class="h-4 w-4 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+                                </button>
+                                <div>
+                                    <p class="font-medium text-white">{{ finding.name|truncatechars:90 }}</p>
+                                    {% if finding.cve_ids %}<p class="mt-1 font-mono text-xs text-[#9ab0d0]">{{ finding.cve_ids|join:", " }}</p>{% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="rounded-full border px-3 py-1 text-xs font-semibold
+                                {% if finding.severity == 'Critical' %}border-red-500/30 bg-red-500/10 text-red-200
+                                {% elif finding.severity == 'High' %}border-red-400/20 bg-red-400/10 text-red-300
+                                {% elif finding.severity == 'Medium' %}border-amber-400/20 bg-amber-400/10 text-amber-300
+                                {% elif finding.severity == 'Low' %}border-blue-400/20 bg-blue-400/10 text-blue-300
+                                {% else %}border-slate-400/20 bg-slate-400/10 text-slate-300{% endif %}">
+                                {{ finding.severity }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">{{ finding.cvss_score|default:"—" }}</td>
+                        <td class="px-6 py-4 font-mono">{{ finding.host }}{% if finding.port %}:{{ finding.port }}{% endif %}</td>
+                    </tr>
+                    <tr id="finding-{{ finding.pk }}" class="hidden finding-detail-row">
+                        <td colspan="4" class="px-6 pb-5 pt-1">
+                            <div class="ml-6 rounded-2xl border border-[#d7ff68]/15 bg-[#d7ff68]/[0.03] p-5">
+                                {% if finding.description %}<p class="text-sm leading-relaxed text-[#c9d5e7]"><strong class="text-white">Description:</strong> {{ finding.description }}</p>{% endif %}
+                                {% if finding.solution %}<p class="mt-3 text-sm leading-relaxed text-[#c9d5e7]"><strong class="text-white">Remediation:</strong> {{ finding.solution }}</p>{% endif %}
+                                {% if finding.references %}<p class="mt-3 text-sm leading-relaxed text-[#c9d5e7]"><strong class="text-white">References:</strong> {{ finding.references|join:", " }}</p>{% endif %}
+                                {% if can_manage_scans and finding.control_selection_options %}
+                                <div class="mt-4">
+                                    <div class="flex flex-wrap items-center justify-between gap-3">
+                                        <div>
+                                            <p class="text-sm font-semibold text-white">Selected controls</p>
+                                            <p class="mt-1 text-xs text-[#9ab0d0]">Use the checklist to keep one, many, or all recommended controls for this finding.</p>
+                                        </div>
+                                        <div class="flex flex-wrap gap-2">
+                                            <button type="button" onclick="setFindingControlState('finding-controls-{{ finding.pk }}', true)" class="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-medium text-white transition hover:bg-white/[0.08]">Select all</button>
+                                            <button type="button" onclick="setFindingControlState('finding-controls-{{ finding.pk }}', false)" class="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-medium text-white transition hover:bg-white/[0.08]">Clear</button>
+                                        </div>
+                                    </div>
+                                    <form method="post" action="{% url 'scanner:scan-detail' scan.pk %}" class="mt-3">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="finding_id" value="{{ finding.pk }}">
+                                        <div id="finding-controls-{{ finding.pk }}" class="space-y-2">
+                                            {% for control in finding.control_selection_options %}
+                                            <label class="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#0c1628] px-4 py-3 transition hover:border-[#d7ff68]/30 hover:bg-[#101d34]">
+                                                <input type="checkbox" name="control_ids" value="{{ control.control_id }}" {% if control.is_selected %}checked{% endif %} class="mt-1 h-4 w-4 rounded border-white/20 bg-[#08111f] text-[#d7ff68] focus:ring-[#d7ff68]">
+                                                <div>
+                                                    <p class="text-sm font-semibold text-white">{{ control.control_id }} · {{ control.title }}</p>
+                                                    <p class="mt-1 text-xs text-[#9ab0d0]">{{ control.category|default:'Uncategorized' }}{% if control.score %} · score {{ control.score|floatformat:2 }}{% endif %}</p>
+                                                </div>
+                                            </label>
+                                        {% endfor %}
+                                        </div>
+                                        <button type="submit" class="mt-4 rounded-2xl bg-[#d7ff68] px-4 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_34px_rgba(215,255,104,0.25)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#e7ff95] active:scale-[0.98]">Save selected controls</button>
+                                    </form>
+                                </div>
+                                {% elif finding.analysis_record and finding.analysis_record.matched_controls %}
+                                <div class="mt-4">
+                                    <p class="text-sm font-semibold text-white">Matched controls</p>
+                                    <div class="mt-2 flex flex-wrap gap-2">
+                                        {% for control in finding.analysis_record.matched_controls %}
+                                        <span class="rounded-full border border-[#d7ff68]/25 bg-[#d7ff68]/10 px-3 py-1 text-xs font-semibold text-[#d7ff68]">{{ control.control_id }} · {{ control.title }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if finding.analysis_record and finding.analysis_record.executive_summary %}<p class="mt-4 text-sm leading-relaxed text-[#c9d5e7]"><strong class="text-white">Correlation summary:</strong> {{ finding.analysis_record.executive_summary }}</p>{% endif %}
+                                {% if finding.analysis_record and finding.analysis_record.technical_remediation %}<p class="mt-3 text-sm leading-relaxed text-[#c9d5e7]"><strong class="text-white">Framework-aligned remediation:</strong> {{ finding.analysis_record.technical_remediation }}</p>{% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr id="findings-empty-row">
+                        <td colspan="4" class="px-6 py-12 text-center text-sm text-[#9ab0d0]">
+                            {% if scan.status == 'running' or scan.status == 'analyzing' %}
+                            Correlation is still in progress for this scan. Findings will appear as analysis completes.
+                            {% else %}
+                            No findings were retained for this scan.
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if findings %}
+                    <tr id="findings-filter-empty" class="hidden">
+                        <td colspan="4" class="px-6 py-12 text-center text-sm text-[#9ab0d0]">No findings match this severity filter.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        {% if findings %}<p class="px-6 py-4 text-xs text-[#9ab0d0]">Click the arrow icon on any finding to expand remediation steps.</p>{% endif %}
     </section>
+
+    {% if can_manage_scans and scan.status == 'running' %}
+    <form id="stop-scan-form" method="post" action="{% url 'scanner:scan-stop' scan.pk %}">{% csrf_token %}</form>
+    <div id="stop-scan-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
+        <div class="w-full max-w-md rounded-[32px] border border-red-400/20 bg-[#0c1010] p-8 shadow-2xl">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl border border-red-400/20 bg-red-400/10">
+                <svg class="h-6 w-6 text-red-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z"/></svg>
+            </div>
+            <h2 class="mt-5 text-2xl font-semibold text-white">Stop this scan?</h2>
+            <p class="mt-3 text-sm leading-relaxed text-[#9ab0d0]">The scan will be terminated immediately. Findings collected so far will be preserved, but the scan cannot be resumed.</p>
+            <div class="mt-8 flex gap-3">
+                <button type="button" id="stop-confirm-btn" class="flex-1 rounded-2xl bg-red-500 px-4 py-3 font-semibold text-white transition hover:bg-red-400">Stop scan</button>
+                <button type="button" id="stop-cancel-btn" class="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 font-medium text-white transition hover:bg-white/[0.08]">Keep running</button>
+            </div>
+        </div>
+    </div>
     {% endif %}
 </main>
 {% endblock %}
 
-{% if scan.status == 'running' or scan.status == 'analyzing' %}
 {% block extra_js %}
 <script>
+    function updatePipeline(progress, status) {
+        const normalizedProgress = Math.max(0, Math.min(100, Number(progress) || 0));
+        const track = document.getElementById('pipeline-track-fill');
+        const bar = document.getElementById('progress-bar');
+        const progressPct = document.getElementById('progress-pct');
+
+        if (track) {
+            track.style.width = `${Math.max(0, Math.min(100, (normalizedProgress / 100) * 88))}%`;
+        }
+        if (bar) {
+            bar.style.width = `${normalizedProgress}%`;
+        }
+        if (progressPct) {
+            progressPct.textContent = `${normalizedProgress}%`;
+        }
+
+        document.querySelectorAll('.pipeline-step').forEach((step) => {
+            const threshold = Number(step.dataset.threshold || 0);
+            const dot = step.querySelector('.pipeline-step-dot');
+            const label = step.querySelector('.pipeline-step-label');
+            if (!dot || !label) {
+                return;
+            }
+
+            const completed = normalizedProgress >= threshold && (status === 'analyzed' || status === 'completed' || normalizedProgress > threshold);
+            const active = !completed && normalizedProgress >= Math.max(0, threshold - 15);
+
+            if (status === 'analyzed' || status === 'completed' || completed) {
+                dot.className = 'pipeline-step-dot flex h-9 w-9 items-center justify-center rounded-full bg-[linear-gradient(135deg,#6adf2a,#d4ff47)] shadow-[0_0_16px_rgba(212,255,71,0.4)]';
+                dot.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0a1a02" stroke-width="2.5"><path d="m4.5 12.75 6 6 9-13.5"/></svg>';
+                label.className = 'pipeline-step-label text-[11px] font-semibold uppercase tracking-[0.08em] text-[#d4ff47]';
+                return;
+            }
+
+            if (active && normalizedProgress > 0) {
+                dot.className = 'pipeline-step-dot flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#d7ff68]/50 bg-[#d7ff68]/10';
+                dot.innerHTML = '<div class="h-2.5 w-2.5 rounded-full bg-[#d7ff68] shadow-[0_0_8px_rgba(212,255,71,0.8)]"></div>';
+                label.className = 'pipeline-step-label text-[11px] font-semibold uppercase tracking-[0.08em] text-[#d4ff47]';
+                return;
+            }
+
+            dot.className = 'pipeline-step-dot flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05]';
+            dot.innerHTML = '';
+            label.className = 'pipeline-step-label text-[11px] font-semibold uppercase tracking-[0.08em] text-[#4d6683]';
+        });
+    }
+
+    function setFindingControlState(containerId, checked) {
+        const container = document.getElementById(containerId);
+        if (!container) {
+            return;
+        }
+
+        container.querySelectorAll('input[type="checkbox"][name="control_ids"]').forEach((input) => {
+            input.checked = checked;
+        });
+    }
+
+    function applyFindingFilter(filter, activeButton) {
+        document.querySelectorAll('.finding-filter-btn').forEach((button) => {
+            button.classList.remove('border-white/20', 'bg-white/[0.08]', 'text-white');
+            button.classList.add('border-transparent', 'text-[#9ab0d0]');
+        });
+
+        activeButton.classList.add('border-white/20', 'bg-white/[0.08]', 'text-white');
+        activeButton.classList.remove('border-transparent', 'text-[#9ab0d0]');
+
+        let visible = 0;
+        document.querySelectorAll('tr[data-finding-severity]').forEach((row) => {
+            const detailRow = row.nextElementSibling;
+            const shouldShow = filter === 'all' || row.dataset.findingSeverity === filter;
+            row.style.display = shouldShow ? '' : 'none';
+            if (!shouldShow && detailRow && detailRow.classList.contains('finding-detail-row')) {
+                detailRow.style.display = 'none';
+                detailRow.classList.add('hidden');
+            }
+            if (shouldShow) {
+                visible += 1;
+            }
+        });
+
+        const filterEmpty = document.getElementById('findings-filter-empty');
+        if (filterEmpty) {
+            filterEmpty.style.display = visible ? 'none' : '';
+            filterEmpty.classList.toggle('hidden', !!visible);
+        }
+    }
+
+    function toggleRemediation(rowId, button) {
+        const detailRow = document.getElementById(rowId);
+        if (!detailRow) {
+            return;
+        }
+
+        detailRow.classList.toggle('hidden');
+        detailRow.style.display = detailRow.classList.contains('hidden') ? 'none' : '';
+        const icon = button.querySelector('svg');
+        if (icon) {
+            icon.classList.toggle('rotate-90');
+        }
+    }
+
+    updatePipeline({{ scan.progress|default:'0' }}, '{{ scan.status }}');
+
+    {% if scan.status == 'running' %}
+    const stopScanButton = document.getElementById('stop-scan-btn');
+    const stopScanModal = document.getElementById('stop-scan-modal');
+    const stopConfirmButton = document.getElementById('stop-confirm-btn');
+    const stopCancelButton = document.getElementById('stop-cancel-btn');
+    const stopScanForm = document.getElementById('stop-scan-form');
+
+    if (stopScanButton && stopScanModal && stopConfirmButton && stopCancelButton && stopScanForm) {
+        stopScanButton.addEventListener('click', () => {
+            stopScanModal.classList.remove('hidden');
+            stopScanModal.classList.add('flex');
+        });
+
+        stopCancelButton.addEventListener('click', () => {
+            stopScanModal.classList.add('hidden');
+            stopScanModal.classList.remove('flex');
+        });
+
+        stopConfirmButton.addEventListener('click', () => {
+            stopScanForm.submit();
+        });
+    }
+    {% endif %}
+
+    {% if scan.status == 'running' or scan.status == 'analyzing' or scan.status == 'completed' or scan.status == 'pending' %}
     const scanId = {{ scan.pk }};
     const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const ws = new WebSocket(`${wsScheme}://${window.location.host}/ws/scan/${scanId}/`);
 
+    function pollScanStatus() {
+        fetch(`{% url 'scanner:scan-status' scan.pk %}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+            .then((response) => response.ok ? response.json() : null)
+            .then((data) => {
+                if (!data) {
+                    return;
+                }
+
+                const progressLabel = document.getElementById('progress-label');
+                updatePipeline(data.progress, data.status || '{{ scan.status }}');
+                if (progressLabel && data.progress_label) {
+                    progressLabel.textContent = data.progress_label;
+                }
+                if (data.status === 'analyzed' || data.status === 'failed') {
+                    setTimeout(() => window.location.reload(), 1200);
+                }
+            })
+            .catch(() => {});
+    }
+
     ws.onmessage = function(event) {
         const data = JSON.parse(event.data);
-        const progressBar = document.getElementById('progress-bar');
-        const progressPct = document.getElementById('progress-pct');
-        const progressPctBar = document.getElementById('progress-pct-bar');
         const progressLabel = document.getElementById('progress-label');
 
         if (data.progress !== undefined) {
-            if (progressBar) progressBar.style.width = data.progress + '%';
-            if (progressPct) progressPct.textContent = data.progress + '%';
-            if (progressPctBar) progressPctBar.textContent = data.progress + '%';
+            updatePipeline(data.progress, data.status || '{{ scan.status }}');
         }
         if (data.message && progressLabel) {
             progressLabel.textContent = data.message;
@@ -137,9 +453,11 @@
     };
 
     ws.onerror = function() {
-        console.log('WebSocket error — falling back to polling');
-        setInterval(() => window.location.reload(), 15000);
+        console.log('WebSocket error — falling back to status polling');
     };
+
+    setInterval(pollScanStatus, 10000);
+    pollScanStatus();
+    {% endif %}
 </script>
 {% endblock %}
-{% endif %}

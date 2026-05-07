@@ -6,7 +6,7 @@
 <div class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(215,255,104,0.12),_transparent_28%),linear-gradient(180deg,_#08111f_0%,_#0b1424_100%)]">
     <header class="border-b border-white/10">
         <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-            <a href="{% url 'accounts:login' %}"><img src="{% static 'images/OmniGov_logo.png' %}" alt="OmniGov" class="h-28 w-auto max-w-none"></a>
+            <a href="{% url 'accounts:login' %}"><img src="{% static 'images/OmniGov_logo_cropped.png' %}" alt="OmniGov" class="h-20 w-auto max-w-none"></a>
             <a href="{% url 'accounts:login' %}" class="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm text-white transition hover:bg-white/[0.08]">Back to login</a>
         </div>
     </header>
@@ -35,23 +35,28 @@
                 {% endfor %}
             </div>
             {% endif %}
+            {% if form.non_field_errors %}
+            <div class="mt-4 rounded-2xl border border-red-400/20 bg-red-400/10 p-3 text-sm text-red-100">
+                {{ form.non_field_errors.0 }}
+            </div>
+            {% endif %}
 
             <form method="post">
                 {% csrf_token %}
                 <div id="registerStepOne" class="mt-8 grid gap-5 md:grid-cols-2">
                     <div>
                         <label for="id_first_name" class="mb-2 block text-sm font-medium text-white">First name</label>
-                        <input type="text" name="first_name" id="id_first_name" value="{{ form.first_name.value|default:'' }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20" placeholder="First name">
+                        <input type="text" name="first_name" id="id_first_name" value="{{ form.first_name.value|default:'' }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20" placeholder="First name" required>
                         {% if form.first_name.errors %}<p class="mt-1 text-xs text-red-300">{{ form.first_name.errors.0 }}</p>{% endif %}
                     </div>
                     <div>
                         <label for="id_last_name" class="mb-2 block text-sm font-medium text-white">Last name</label>
-                        <input type="text" name="last_name" id="id_last_name" value="{{ form.last_name.value|default:'' }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20" placeholder="Last name">
+                        <input type="text" name="last_name" id="id_last_name" value="{{ form.last_name.value|default:'' }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20" placeholder="Last name" required>
                         {% if form.last_name.errors %}<p class="mt-1 text-xs text-red-300">{{ form.last_name.errors.0 }}</p>{% endif %}
                     </div>
                     <div class="md:col-span-2">
                         <label for="id_email" class="mb-2 block text-sm font-medium text-white">Email address</label>
-                        <input type="email" name="email" id="id_email" value="{{ form.email.value|default:'' }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20" placeholder="Email address">
+                        <input type="email" name="email" id="id_email" value="{{ form.email.value|default:'' }}" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20" placeholder="Email address" required>
                         {% if form.email.errors %}<p class="mt-1 text-xs text-red-300">{{ form.email.errors.0 }}</p>{% endif %}
                     </div>
                     <div class="md:col-span-2">
@@ -62,12 +67,12 @@
                 <div id="registerStepTwo" class="mt-8 hidden grid gap-5">
                     <div>
                         <label for="id_password1" class="mb-2 block text-sm font-medium text-white">Password</label>
-                        <input type="password" name="password1" id="id_password1" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20" placeholder="Password">
+                        <input type="password" name="password1" id="id_password1" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20" placeholder="Password" required>
                         {% if form.password1.errors %}<p class="mt-1 text-xs text-red-300">{{ form.password1.errors.0 }}</p>{% endif %}
                     </div>
                     <div>
                         <label for="id_password2" class="mb-2 block text-sm font-medium text-white">Confirm password</label>
-                        <input type="password" name="password2" id="id_password2" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20" placeholder="Confirm password">
+                        <input type="password" name="password2" id="id_password2" class="w-full rounded-2xl border border-white/10 bg-[#0b1526] px-4 py-3 text-white outline-none transition focus:border-[#d7ff68]/60 focus:ring-2 focus:ring-[#d7ff68]/20" placeholder="Confirm password" required>
                         {% if form.password2.errors %}<p class="mt-1 text-xs text-red-300">{{ form.password2.errors.0 }}</p>{% endif %}
                     </div>
                     <div class="flex gap-3">

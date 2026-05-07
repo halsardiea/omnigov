@@ -1,13 +1,55 @@
+# ---
+# LOCATION : omnigov/settings/base.py
+# PURPOSE  : Shared configuration that every environment (development, production,
+#            container) inherits. Anything that must be consistent across all
+#            deployments lives here. Environment-specific overrides go in
+#            development.py or production.py.
+#
+# CONNECTS TO:
+#   - omnigov/settings/development.py  → imports everything from here via 'from .base import *'
+#                                         and overrides DATABASE, CHANNEL_LAYERS, LOGGING
+#   - omnigov/settings/production.py   → same pattern; adds HTTPS/HSTS settings and
+#                                         replaces ALLOWED_HOSTS with an env-driven list
+#   - omnigov/asgi.py                  → ASGI_APPLICATION points to the Channels router
+#   - omnigov/celery.py                → reads CELERY_* settings from this module
+#   - omnigov/middleware.py            → registered in MIDDLEWARE list here
+#   - apps/accounts/models.py          → AUTH_USER_MODEL = 'accounts.User' set here
+#   - apps/interceptor/correlation.py  → ANTHROPIC_API_KEY and AI_CORRELATION_* read here
+#   - apps/scanner/gvm_client.py       → GVM_* settings read here
+# ---
 import os
 from pathlib import Path
 from decouple import config, Csv
+from django.core.exceptions import ImproperlyConfigured
+
+
+def _require_env(var_name):
+    """Read a required environment variable — crash at startup if it is missing.
+
+    This prevents the server from ever starting with a dangerously weak default.
+    Failing loudly at boot is safer than silently running with broken credentials.
+    """
+    value = config(var_name, default='')
+    if not value:
+        raise ImproperlyConfigured(
+            f"Required environment variable '{var_name}' is not set. "
+            "Add it to your .env file before starting the server."
+        )
+    return value
 
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Security
-SECRET_KEY = config('DJANGO_SECRET_KEY', default='django-insecure-change-me-in-production')
-DEBUG = config('DJANGO_DEBUG', default=True, cast=bool)
+
+# No default allowed — a weak secret key breaks session signing, CSRF tokens,
+# and password reset links. The server must not start without an explicit value.
+SECRET_KEY = _require_env('DJANGO_SECRET_KEY')
+
+# Safe default is OFF — a developer must explicitly set DJANGO_DEBUG=True in .env.
+# Accidentally running DEBUG=True in production exposes stack traces and DB queries.
+DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
+
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
 
 # Application definition
@@ -24,8 +66,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'channels',
     'django_celery_results',
-    'django_otp',
-    'django_otp.plugins.otp_email',
     # Local apps
     'apps.accounts',
     'apps.scanner',
@@ -41,7 +81,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_otp.middleware.OTPMiddleware',
+    'omnigov.middleware.NoStoreAuthenticatedPagesMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -73,7 +113,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': config('DB_NAME', default='omnigov'),
         'USER': config('DB_USER', default='omnigov'),
-        'PASSWORD': config('DB_PASSWORD', default='omnigov_dev_password'),
+        # No default — PostgreSQL will refuse to connect with a blank password,
+        # which is intentional. Never silently connect with a known default credential.
+        'PASSWORD': config('DB_PASSWORD', default=''),
         'HOST': config('DB_HOST', default='localhost'),
         'PORT': config('DB_PORT', default='5432'),
     }
@@ -94,6 +136,23 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+
+# Session expires after 1 hour — reduces the attack window if a session token is stolen
+SESSION_COOKIE_AGE = 3600
+
+# Session ends when the browser closes — prevents reuse on shared or borrowed computers
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# CSRF cookie is not readable by JavaScript — prevents token theft via XSS injection
+CSRF_COOKIE_HTTPONLY = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = 'same-origin'
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin'
+X_FRAME_OPTIONS = 'DENY'
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
@@ -162,17 +221,6 @@ CACHES = {
 }
 
 # ============================================================
-# Email (OTP delivery)
-# ============================================================
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
-EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
-DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER', default='noreply@omnigov.net')
-
-# ============================================================
 # OmniGov Custom Settings
 # ============================================================
 
@@ -182,9 +230,13 @@ GVM_PORT = config('GVM_PORT', default=9390, cast=int)
 # Unix socket path — used on Linux (Kali/Debian GVM package default).
 # Set to empty string '' to force TCP connection instead.
 GVM_SOCKET_PATH = config('GVM_SOCKET_PATH', default='/run/gvmd/gvmd.sock')
-GVM_ADMIN_USER = config('GVM_ADMIN_USER', default='admin')
-GVM_ADMIN_PASSWORD = config('GVM_ADMIN_PASSWORD', default='admin')
+# No defaults — GVM authentication will fail loudly if these are blank.
+# This forces explicit credential management instead of leaving GVM at the
+# factory-default 'admin/admin' that every attacker knows.
+GVM_ADMIN_USER = config('GVM_ADMIN_USER', default='')
+GVM_ADMIN_PASSWORD = config('GVM_ADMIN_PASSWORD', default='')
 GVM_USE_MOCK = config('GVM_USE_MOCK', default=True, cast=bool)
+
 
 # Site
 SITE_DOMAIN = config('SITE_DOMAIN', default='localhost:8000')
@@ -194,6 +246,77 @@ SITE_NAME = config('SITE_NAME', default='OmniGov')
 MAX_CONCURRENT_SCANS = 3
 SCAN_POLL_INTERVAL = 10  # seconds
 
-# OTP settings
-OTP_EMAIL_SENDER = DEFAULT_FROM_EMAIL
-OTP_EMAIL_TOKEN_VALIDITY = 300  # 5 minutes
+# Correlation / AI enrichment (Claude via Anthropic API)
+# Set ANTHROPIC_API_KEY to activate AI-backed refinement; leave blank for deterministic heuristic-only mode.
+ANTHROPIC_API_KEY = config('ANTHROPIC_API_KEY', default='')
+AI_CORRELATION_MODEL = config('AI_CORRELATION_MODEL', default='claude-3-5-haiku-20241022')
+AI_CORRELATION_MAX_CANDIDATES = config('AI_CORRELATION_MAX_CANDIDATES', default=8, cast=int)
+AI_CORRELATION_TOP_MATCHES = config('AI_CORRELATION_TOP_MATCHES', default=3, cast=int)
+
+# ============================================================
+# Audit Logging
+# ============================================================
+# Create the logs directories at startup so file handlers never fail on first write.
+os.makedirs(BASE_DIR / 'logs', exist_ok=True)
+os.makedirs(BASE_DIR / 'logs' / 'ai', exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} {levelname} {name} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        # Security events (failed logins, rejected WebSocket connections, scan audit)
+        # are written to a dedicated rotating file so they can be reviewed independently
+        # of the general application log or shipped to a SIEM.
+        'security_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'logs' / 'security.log',
+            'maxBytes': 10 * 1024 * 1024,  # rotate at 10 MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        # AI correlation events (Claude API calls, heuristic scoring, framework alignment)
+        # are isolated here so they can be audited separately from app and security logs.
+        'ai_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'logs' / 'ai' / 'correlation.log',
+            'maxBytes': 10 * 1024 * 1024,  # rotate at 10 MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+    'loggers': {
+        'apps': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        # django.security captures Django's own security events (CSRF failures,
+        # SuspiciousOperation, etc.) plus our custom security_logger entries.
+        'django.security': {
+            'handlers': ['console', 'security_file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        # AI/Claude correlation module — logs separately so every API call,
+        # heuristic match, and scoring decision is traceable in logs/ai/.
+        'apps.interceptor.correlation': {
+            'handlers': ['console', 'ai_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
