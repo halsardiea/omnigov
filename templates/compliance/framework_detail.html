@@ -2,11 +2,11 @@
 {% block title %}{{ framework.name }} {{ framework.version }} — OmniGov{% endblock %}
 
 {% block content %}
-<header class="border-b border-white/10 bg-[#08111f]/90">
+<header class="border-b border-white/10 bg-[#060d1a]/90 backdrop-blur">
     <div class="flex items-center justify-between px-6 py-5">
         <div>
             <p class="text-sm uppercase tracking-[0.22em] text-[#9ab0d0]">{{ framework.name }}:{{ framework.version }}</p>
-            <h1 class="mt-3 text-4xl font-semibold tracking-tight">Framework Catalog</h1>
+            <h1 class="og-page-title mt-3 text-4xl font-semibold tracking-tight">Framework Catalog</h1>
         </div>
         <a href="{% url 'compliance:framework-list' %}" class="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white transition hover:bg-white/[0.08]">Back to frameworks</a>
     </div>

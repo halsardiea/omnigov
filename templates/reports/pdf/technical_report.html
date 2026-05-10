@@ -4,99 +4,283 @@
     <meta charset="utf-8">
     <title>Technical Assessment Report — {{ scan_task.name }}</title>
     <style>
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10pt; color: #1a1a2e; margin: 30px; }
-        h1 { color: #312e81; border-bottom: 3px solid #312e81; padding-bottom: 10px; }
-        h2 { color: #4338ca; margin-top: 30px; }
-        h3 { color: #1e1b4b; margin-top: 15px; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .meta { color: #666; font-size: 9pt; }
-        .finding { border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin: 12px 0; page-break-inside: avoid; }
-        .finding-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .severity-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-weight: bold; font-size: 9pt; }
-        .sev-critical { background: #fee2e2; color: #991b1b; }
-        .sev-high { background: #fee2e2; color: #dc2626; }
-        .sev-medium { background: #fef3c7; color: #d97706; }
-        .sev-low { background: #dbeafe; color: #2563eb; }
-        .field-label { font-weight: bold; color: #4338ca; font-size: 9pt; }
-        .remediation { background: #f0fdf4; border-left: 4px solid #059669; padding: 10px; margin: 8px 0; font-size: 9pt; }
-        .controls { background: #faf5ff; border-left: 4px solid #7c3aed; padding: 10px; margin: 8px 0; font-size: 9pt; }
-        .footer { margin-top: 30px; padding-top: 10px; border-top: 1px solid #ccc; font-size: 8pt; color: #999; text-align: center; }
-        .page-break { page-break-before: always; }
+        @page {
+            margin: 18mm 20mm 18mm 20mm;
+            size: A4;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 9.5pt;
+            color: #1c2333;
+            line-height: 1.65;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ── Cover header ── */
+        .cover {
+            border-bottom: 2px solid #0f172a;
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+        }
+
+        .cover-eyebrow {
+            font-size: 7.5pt;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #64748b;
+            margin: 0 0 8px;
+        }
+
+        .cover-title {
+            font-size: 20pt;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 4px;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .cover-meta {
+            font-size: 8.5pt;
+            color: #64748b;
+            margin: 8px 0 0;
+            line-height: 1.8;
+        }
+
+        .cover-meta span {
+            display: inline-block;
+            margin-right: 18px;
+        }
+
+        /* ── Section headings ── */
+        h2 {
+            font-size: 11pt;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 28px 0 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e2e8f0;
+            letter-spacing: -0.01em;
+            page-break-after: avoid;
+        }
+
+        /* ── Finding card ── */
+        .finding {
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 14px 16px;
+            margin: 0 0 12px;
+            page-break-inside: avoid;
+        }
+
+        .finding-title {
+            font-size: 10pt;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 4px;
+            line-height: 1.4;
+        }
+
+        .finding-meta {
+            font-size: 8pt;
+            color: #64748b;
+            margin: 0 0 10px;
+            line-height: 1.6;
+        }
+
+        /* ── Severity badges ── */
+        .sev-badge {
+            display: inline-block;
+            padding: 2px 9px;
+            border-radius: 3px;
+            font-size: 7.5pt;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+
+        .sev-critical { background: #fee2e2; color: #7f1d1d; }
+        .sev-high     { background: #fee2e2; color: #b91c1c; }
+        .sev-medium   { background: #fef3c7; color: #92400e; }
+        .sev-low      { background: #dbeafe; color: #1e40af; }
+        .sev-info     { background: #f1f5f9; color: #475569; }
+
+        /* ── Field label ── */
+        .field-label {
+            font-size: 7.5pt;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #64748b;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        /* ── Field body — explicit block so WeasyPrint gives it full width ── */
+        .field-body {
+            display: block;
+            width: 100%;
+            white-space: normal;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            color: #334155;
+            font-size: 9pt;
+            line-height: 1.65;
+        }
+
+        /* ── Content blocks ── */
+        .block {
+            padding: 10px 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+            font-size: 9pt;
+            line-height: 1.65;
+        }
+
+        .block-remediation {
+            background: #f0fdf4;
+            border-left: 3px solid #059669;
+        }
+
+        .block-controls {
+            background: #faf5ff;
+            border-left: 3px solid #7c3aed;
+        }
+
+        .block-summary {
+            background: #f8fafc;
+            border-left: 3px solid #0ea5e9;
+        }
+
+        /* ── Control entry ── */
+        .control-entry {
+            margin: 8px 0 0;
+            padding-top: 8px;
+            border-top: 1px solid #e9d5ff;
+        }
+
+        .control-entry:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .control-id {
+            font-weight: 700;
+            color: #5b21b6;
+            font-size: 9pt;
+        }
+
+        /* ── References ── */
+        .references {
+            font-size: 8pt;
+            color: #64748b;
+            margin: 8px 0 0;
+            word-break: break-all;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            margin-top: 32px;
+            padding-top: 10px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 7.5pt;
+            color: #94a3b8;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>OmniGov — Technical Assessment Report</h1>
-        <div class="meta">
-            <p>Scan: {{ scan_task.name }} &mdash; Target: {{ scan_task.target }}</p>
-            <p>Framework: {{ framework.name }} {{ framework.version }}</p>
-            <p>Generated: {{ generated_at|date:"F d, Y H:i" }} &mdash; {{ total_findings }} findings ({{ high_findings }} high severity)</p>
+
+    <div class="cover">
+        <p class="cover-eyebrow">OmniGov &mdash; Technical Assessment Report</p>
+        <h1 class="cover-title">{{ scan_task.name }}</h1>
+        <div class="cover-meta">
+            <span><strong>Target:</strong> {{ scan_task.target }}</span>
+            <span><strong>Framework:</strong> {{ framework.name }} {{ framework.version }}</span>
+            <span><strong>Generated:</strong> {{ generated_at|date:"F d, Y H:i" }}</span>
+            <span><strong>Findings:</strong> {{ total_findings }} total &middot; {{ high_findings }} high severity</span>
         </div>
     </div>
 
     {% for severity, findings in findings_by_severity.items %}
     {% if findings %}
-    <h2>{{ severity }} Severity Findings ({{ findings|length }})</h2>
+    <h2>{{ severity }} Severity &mdash; {{ findings|length }} Finding{{ findings|length|pluralize }}</h2>
+
     {% for entry in findings %}
     <div class="finding">
-        <div>
-            <strong>{{ entry.finding.name }}</strong>
-            <span class="severity-badge sev-{{ severity|lower }}">{{ severity }}</span>
-            {% if entry.finding.cvss_score %}<span style="margin-left: 8px; font-size: 9pt; color: #666;">CVSS: {{ entry.finding.cvss_score }}</span>{% endif %}
+
+        <div class="finding-title">
+            {{ entry.finding.name }}
+            <span class="sev-badge sev-{{ severity|lower }}">{{ severity }}</span>
+            {% if entry.finding.cvss_score %}<span style="font-size:8pt; font-weight:400; color:#64748b; margin-left:6px;">CVSS {{ entry.finding.cvss_score }}</span>{% endif %}
         </div>
 
-        <p style="font-size: 9pt; color: #666; margin: 5px 0;">
-            Host: {{ entry.finding.host }}:{{ entry.finding.port }}
-            {% if entry.finding.cve_ids %}&mdash; CVE: {{ entry.finding.cve_ids|join:", " }}{% endif %}
-            {% if entry.finding.qod %}&mdash; QoD: {{ entry.finding.qod }}%{% endif %}
-            {% if entry.finding.nvt_oid %}&mdash; NVT: {{ entry.finding.nvt_oid }}{% endif %}
-        </p>
+        <div class="finding-meta">
+            <span><strong>Host:</strong> {{ entry.finding.host }}{% if entry.finding.port %}:{{ entry.finding.port }}{% endif %}</span>
+            {% if entry.finding.cve_ids %}<span style="margin-left:14px;"><strong>CVE:</strong> {{ entry.finding.cve_ids|join:", " }}</span>{% endif %}
+            {% if entry.finding.qod %}<span style="margin-left:14px;"><strong>QoD:</strong> {{ entry.finding.qod }}%</span>{% endif %}
+            {% if entry.finding.nvt_oid %}<span style="margin-left:14px;"><strong>NVT:</strong> {{ entry.finding.nvt_oid }}</span>{% endif %}
+        </div>
 
         {% if entry.finding.description %}
-        <div><span class="field-label">Description:</span> <span style="font-size: 9pt; white-space: pre-line;">{{ entry.finding.description }}</span></div>
+        <div style="margin-bottom:8px;">
+            <span class="field-label">Description</span>
+            <div class="field-body">{{ entry.finding.description }}</div>
+        </div>
         {% endif %}
 
         {% if entry.finding.solution %}
-        <div class="remediation">
-            <span class="field-label">Suggested Fix:</span><br>
-            <span style="white-space: pre-line;">{{ entry.finding.solution }}</span>
+        <div class="block block-remediation">
+            <span class="field-label">Suggested Fix</span>
+            <div class="field-body">{{ entry.finding.solution }}</div>
         </div>
         {% endif %}
 
         {% if entry.matched_controls %}
-        <div class="controls">
-            <span class="field-label">Matched Controls:</span>
+        <div class="block block-controls">
+            <span class="field-label">Matched Controls</span>
             {% for control in entry.matched_controls %}
-            <div style="margin-top: 8px;">
-                <div><strong>{{ control.control_id }} — {{ control.title }}</strong>{% if control.category %} ({{ control.category }}){% endif %}{% if control.score %} — score {{ control.score|floatformat:2 }}{% endif %}</div>
-                {% if control.description %}<div style="margin-top: 3px; white-space: pre-line;">{{ control.description }}</div>{% endif %}
-                {% if control.guidance %}<div style="margin-top: 3px; color: #4b5563; white-space: pre-line;"><strong>Guidance:</strong> {{ control.guidance }}</div>{% endif %}
-                {% if control.match_reasons %}<div style="margin-top: 3px; color: #4b5563;"><strong>Why matched:</strong> {{ control.match_reasons|join:", " }}</div>{% endif %}
+            <div class="control-entry">
+                <span class="control-id">{{ control.control_id }}</span>
+                {% if control.title %} &mdash; {{ control.title }}{% endif %}
+                {% if control.category %} <span style="color:#64748b;">({{ control.category }})</span>{% endif %}
+                {% if control.score %} <span style="color:#94a3b8; font-size:8pt;">score {{ control.score|floatformat:2 }}</span>{% endif %}
+                {% if control.description %}<div class="field-body" style="margin-top:3px; color:#374151;">{{ control.description }}</div>{% endif %}
+                {% if control.guidance %}<div class="field-body" style="margin-top:3px; color:#4b5563;"><strong>Guidance:</strong> {{ control.guidance }}</div>{% endif %}
+                {% if control.match_reasons %}<div class="field-body" style="margin-top:3px; color:#64748b; font-size:8.5pt;"><strong>Why matched:</strong> {{ control.match_reasons|join:", " }}</div>{% endif %}
             </div>
             {% endfor %}
         </div>
         {% endif %}
 
         {% if entry.executive_summary %}
-        <div class="controls">
-            <span class="field-label">Correlation Summary:</span><br>
-            <span style="white-space: pre-line;">{{ entry.executive_summary }}</span>
+        <div class="block block-summary">
+            <span class="field-label">Correlation Summary</span>
+            <div class="field-body">{{ entry.executive_summary }}</div>
         </div>
         {% endif %}
 
         {% if entry.technical_remediation %}
-        <div class="remediation">
-            <span class="field-label">Framework-Aligned Remediation:</span><br>
-            <span style="white-space: pre-line;">{{ entry.technical_remediation }}</span>
+        <div class="block block-remediation">
+            <span class="field-label">Framework-Aligned Remediation</span>
+            <div class="field-body">{{ entry.technical_remediation }}</div>
         </div>
         {% endif %}
 
         {% if entry.finding.references %}
-        <div style="margin-top: 8px; font-size: 9pt;">
-            <span class="field-label">References:</span>
-            <span style="white-space: pre-line;">{{ entry.finding.references|join:", " }}</span>
+        <div class="references">
+            <strong>References:</strong> {{ entry.finding.references|join:" &middot; " }}
         </div>
         {% endif %}
+
     </div>
     {% endfor %}
     {% endif %}
@@ -105,5 +289,6 @@
     <div class="footer">
         OmniGov Compliance Intelligence Platform &mdash; Princess Sumaya University for Technology &mdash; Confidential
     </div>
+
 </body>
 </html>

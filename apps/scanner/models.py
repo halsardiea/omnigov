@@ -66,9 +66,9 @@ class ScanTask(models.Model):
     class Status(models.TextChoices):
         PENDING = 'pending', 'Pending'
         RUNNING = 'running', 'Running'
-        COMPLETED = 'completed', 'Scan Completed'
-        ANALYZING = 'analyzing', 'Correlating Findings'
-        ANALYZED = 'analyzed', 'Correlation Complete'
+        COMPLETED = 'completed', 'Completed'
+        ANALYZING = 'analyzing', 'Analyzing'
+        ANALYZED = 'analyzed', 'Complete'
         FAILED = 'failed', 'Failed'
         STOPPED = 'stopped', 'Stopped'
 

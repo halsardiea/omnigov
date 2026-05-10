@@ -58,10 +58,10 @@
                         <div class="min-w-[140px]">
                             <div class="flex items-center justify-between text-xs text-[#9ab0d0]">
                                 <span>{{ scan.progress }}%</span>
-                                <span>{% if scan.status == 'failed' %}Interrupted{% elif scan.status == 'stopped' %}Stopped{% else %}Live{% endif %}</span>
+                                <span>{% if scan.status == 'failed' %}Interrupted{% elif scan.status == 'stopped' %}Stopped{% elif scan.status == 'running' or scan.status == 'analyzing' %}Live{% elif scan.status == 'pending' %}Queued{% endif %}</span>
                             </div>
                             <div class="mt-2 h-1.5 rounded-full bg-white/10">
-                                <div class="h-1.5 rounded-full {% if scan.status == 'analyzed' or scan.status == 'completed' %}bg-green-400{% elif scan.status == 'failed' %}bg-red-500/10{% else %}bg-[#d7ff68]{% endif %}" style="width: {{ scan.progress }}%"></div>
+                                <div class="h-1.5 rounded-full {% if scan.status == 'analyzed' or scan.status == 'completed' %}bg-green-400{% elif scan.status == 'failed' %}bg-[linear-gradient(90deg,#ef4444,#f87171)]{% else %}bg-[#d7ff68]{% endif %}" style="width: {{ scan.progress }}%"></div>
                             </div>
                         </div>
                     </td>
