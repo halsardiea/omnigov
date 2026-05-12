@@ -60,7 +60,29 @@ class ReportListView(LoginRequiredMixin, ListView):
         technical_reports = [report for report in reports if report.report_type == Report.ReportType.TECHNICAL]
         scored_reports = [report.compliance_score for report in reports if report.compliance_score is not None]
 
+        # Build scan-grouped structure for the by-scan view
+        seen = {}
+        for report in sorted(reports, key=lambda r: r.scan_task.created_at, reverse=True):
+            sid = report.scan_task_id
+            if sid not in seen:
+                seen[sid] = {
+                    'scan': report.scan_task,
+                    'executive': [],
+                    'technical_pdf': [],
+                    'csv': [],
+                    'score': None,
+                }
+            if report.report_type == Report.ReportType.EXECUTIVE:
+                seen[sid]['executive'].append(report)
+                if report.compliance_score is not None and seen[sid]['score'] is None:
+                    seen[sid]['score'] = report.compliance_score
+            elif report.format == 'csv':
+                seen[sid]['csv'].append(report)
+            else:
+                seen[sid]['technical_pdf'].append(report)
+
         context['reports'] = reports
+        context['reports_by_scan'] = list(seen.values())
         context['executive_reports'] = executive_reports
         context['technical_reports'] = technical_reports
         context['total_reports'] = len(reports)
