@@ -4,83 +4,340 @@
     <meta charset="utf-8">
     <title>Executive Compliance Report — {{ scan_task.name }}</title>
     <style>
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11pt; color: #1a1a2e; margin: 40px; }
-        h1 { color: #312e81; border-bottom: 3px solid #312e81; padding-bottom: 10px; }
-        h2 { color: #4338ca; margin-top: 30px; }
-        .header { text-align: center; margin-bottom: 40px; }
-        .header h1 { font-size: 24pt; }
-        .meta { color: #666; font-size: 9pt; }
-        .score-box { background: #f0f0ff; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0; }
-        .score-value { font-size: 48pt; font-weight: bold; color: {% if compliance_score >= 80 %}#059669{% elif compliance_score >= 50 %}#d97706{% else %}#dc2626{% endif %}; }
-        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-        th { background: #312e81; color: white; padding: 8px 12px; text-align: left; font-size: 9pt; }
-        td { padding: 8px 12px; border-bottom: 1px solid #e0e0e0; font-size: 9pt; }
-        tr:nth-child(even) { background: #f9f9ff; }
-        .severity-critical { color: #991b1b; font-weight: bold; }
-        .severity-high { color: #dc2626; font-weight: bold; }
-        .severity-medium { color: #d97706; font-weight: bold; }
-        .severity-low { color: #2563eb; }
-        .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 8pt; color: #999; text-align: center; }
-        .page-break { page-break-before: always; }
+        /* ── Page setup with repeating footer ── */
+        @page {
+            size: A4;
+            margin: 18mm 20mm 28mm 20mm;
+            @bottom-center {
+                content: "OmniGov Compliance Intelligence Platform  ·  Princess Sumaya University for Technology  ·  Confidential";
+                font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                font-size: 7pt;
+                color: #94a3b8;
+                border-top: 1px solid #e2e8f0;
+                padding-top: 6pt;
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 10pt;
+            color: #1c2333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ── Cover header ── */
+        .cover {
+            border-bottom: 2px solid #0f172a;
+            padding-bottom: 20px;
+            margin-bottom: 26px;
+        }
+
+        .cover-eyebrow {
+            font-size: 7.5pt;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #64748b;
+            margin: 0 0 8px;
+        }
+
+        .cover-title {
+            font-size: 22pt;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 4px;
+            letter-spacing: -0.02em;
+            line-height: 1.15;
+        }
+
+        .cover-meta {
+            font-size: 9pt;
+            color: #64748b;
+            margin: 10px 0 0;
+            line-height: 1.8;
+        }
+
+        .cover-meta span {
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+        /* ── Score banner ── */
+        .score-banner {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            padding: 18px 22px;
+            margin: 0 0 28px;
+        }
+
+        .score-number {
+            font-size: 44pt;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            flex-shrink: 0;
+        }
+
+        .score-label {
+            font-size: 7.5pt;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .score-detail {
+            font-size: 9.5pt;
+            color: #334155;
+            line-height: 1.55;
+        }
+
+        /* Score colour variants — background tint + thick left border + number colour */
+        .score-green {
+            background: #f0fdf4;
+            border-left: 7px solid #059669;
+        }
+        .score-green .score-number { color: #059669; }
+
+        .score-amber {
+            background: #fffbeb;
+            border-left: 7px solid #d97706;
+        }
+        .score-amber .score-number { color: #d97706; }
+
+        .score-red {
+            background: #fef2f2;
+            border-left: 7px solid #dc2626;
+        }
+        .score-red .score-number { color: #dc2626; }
+
+        /* ── Section headings ── */
+        h2 {
+            font-size: 10.5pt;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: #0f172a;
+            margin: 26px 0 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e2e8f0;
+            page-break-after: avoid;
+        }
+
+        /* ── 2-column summary tables ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9pt;
+            margin: 0 0 20px;
+        }
+
+        thead th {
+            background: #0f172a;
+            color: #f1f5f9;
+            font-size: 7.5pt;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 9px 12px;
+            text-align: left;
+        }
+
+        tbody td {
+            padding: 9px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            vertical-align: top;
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:nth-child(even) td { background: #f8fafc; }
+
+        /* ── Severity text colours (tables) ── */
+        .sev-critical { color: #7f1d1d; font-weight: 700; }
+        .sev-high     { color: #b91c1c; font-weight: 700; }
+        .sev-medium   { color: #92400e; font-weight: 600; }
+        .sev-low      { color: #1e40af; }
+        .sev-info     { color: #374151; }
+
+        /* ── Finding cards ── */
+        .finding-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 13px 16px;
+            margin: 0 0 10px;
+            page-break-inside: avoid;
+        }
+
+        /* Left accent by severity */
+        .card-critical { border-left: 4px solid #b91c1c; }
+        .card-high     { border-left: 4px solid #dc2626; }
+        .card-medium   { border-left: 4px solid #d97706; }
+        .card-low      { border-left: 4px solid #2563eb; }
+        .card-info     { border-left: 4px solid #64748b; }
+
+        .finding-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .finding-card-name {
+            font-size: 9.5pt;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        /* Severity pill */
+        .sev-pill {
+            display: inline-block;
+            padding: 2px 9px;
+            border-radius: 3px;
+            font-size: 7.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .pill-critical { background: #fee2e2; color: #7f1d1d; }
+        .pill-high     { background: #fee2e2; color: #b91c1c; }
+        .pill-medium   { background: #fef3c7; color: #92400e; }
+        .pill-low      { background: #dbeafe; color: #1e40af; }
+        .pill-info     { background: #f1f5f9; color: #475569; }
+
+        .finding-card-meta {
+            font-size: 8pt;
+            color: #64748b;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        /* Control ID tags */
+        .ctrl-tag {
+            display: inline-block;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 3px;
+            font-size: 7.5pt;
+            padding: 1px 5px;
+            margin: 1px 2px 1px 0;
+            color: #475569;
+        }
+
+        /* Executive summary paragraph */
+        .finding-card-summary {
+            font-size: 9pt;
+            color: #334155;
+            line-height: 1.65;
+            display: block;
+        }
+
+        /* ── Muted text ── */
+        .muted { color: #94a3b8; font-style: italic; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>OmniGov — Executive Compliance Report</h1>
-        <div class="meta">
-            <p>Scan: {{ scan_task.name }} &mdash; Target: {{ scan_task.target }}</p>
-            <p>Framework: {{ framework.name }} {{ framework.version }}</p>
-            <p>Generated: {{ generated_at|date:"F d, Y H:i" }}</p>
+
+    <div class="cover">
+        <p class="cover-eyebrow">OmniGov &mdash; Executive Compliance Report</p>
+        <h1 class="cover-title">{{ scan_task.name }}</h1>
+        <div class="cover-meta">
+            <span><strong>Target:</strong> {{ scan_task.target }}</span>
+            <span><strong>Framework:</strong> {{ framework.name }} {{ framework.version }}</span>
+            <span><strong>Generated:</strong> {{ generated_at|date:"F d, Y H:i" }}</span>
         </div>
     </div>
 
-    <div class="score-box">
-        <div style="font-size: 14pt; color: #666;">Compliance Score</div>
-        <div class="score-value">{{ compliance_score }}%</div>
-        <div style="color: #666;">{{ passing_count }} aligned / {{ failing_count }} impacted of {{ total_controls }} framework controls</div>
+    <div class="score-banner {% if compliance_score >= 80 %}score-green{% elif compliance_score >= 50 %}score-amber{% else %}score-red{% endif %}">
+        <div class="score-number">{{ compliance_score }}%</div>
+        <div>
+            <div class="score-label">Compliance Score</div>
+            <div class="score-detail">
+                <strong>{{ passing_count }}</strong> controls aligned &nbsp;&middot;&nbsp;
+                <strong>{{ failing_count }}</strong> impacted &nbsp;&middot;&nbsp;
+                <strong>{{ total_controls }}</strong> total framework controls
+            </div>
+        </div>
     </div>
 
     <h2>Framework Impact</h2>
     <table>
-        <tr><th>Metric</th><th>Value</th></tr>
-        <tr><td>Mapped Findings</td><td>{{ alignment_summary.mapped_findings_count }}</td></tr>
-        <tr><td>Impacted Controls</td><td>{{ alignment_summary.impacted_controls_count }}</td></tr>
-        <tr><td>Top Categories</td><td>{% for category, count in alignment_summary.top_categories %}{{ category }} ({{ count }}){% if not forloop.last %}, {% endif %}{% empty %}No framework categories were matched{% endfor %}</td></tr>
+        <thead>
+            <tr>
+                <th style="width:45%">Metric</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Mapped Findings</td><td>{{ alignment_summary.mapped_findings_count }}</td></tr>
+            <tr><td>Impacted Controls</td><td>{{ alignment_summary.impacted_controls_count }}</td></tr>
+            <tr>
+                <td>Top Impacted Categories</td>
+                <td>{% for category, count in alignment_summary.top_categories %}{{ category }} ({{ count }}){% if not forloop.last %}, {% endif %}{% empty %}<span class="muted">No categories matched</span>{% endfor %}</td>
+            </tr>
+        </tbody>
     </table>
 
     <h2>Severity Distribution</h2>
     <table>
-        <tr><th>Severity</th><th>Count</th></tr>
-        {% for sev, count in severity_counts.items %}
-        <tr>
-            <td class="severity-{{ sev|lower }}">{{ sev }}</td>
-            <td>{{ count }}</td>
-        </tr>
-        {% endfor %}
+        <thead>
+            <tr>
+                <th style="width:45%">Severity</th>
+                <th>Finding Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sev, count in severity_counts.items %}
+            <tr>
+                <td class="sev-{{ sev|lower }}">{{ sev }}</td>
+                <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 
     <h2>Findings Overview</h2>
-    <table>
-        <tr>
-            <th>Finding</th>
-            <th>Severity</th>
-            <th>CVSS</th>
-            <th>Compliance</th>
-            <th>Executive Summary</th>
-        </tr>
-        {% for entry in finding_entries %}
-        <tr>
-            <td>{{ entry.finding.name|truncatechars:60 }}</td>
-            <td class="severity-{{ entry.finding.severity|lower }}">{{ entry.finding.severity }}</td>
-            <td>{{ entry.finding.cvss_score|default:"—" }}</td>
-            <td>{% if entry.matched_controls %}{% for control in entry.matched_controls %}{{ control.control_id }}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}<span style="color:#9ca3af; font-style:italic;">No strong match</span>{% endif %}</td>
-            <td>{% if entry.executive_summary %}{{ entry.executive_summary|truncatechars:220 }}{% else %}<span style="color:#9ca3af; font-style:italic;">—</span>{% endif %}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    {% for entry in finding_entries %}
+    <div class="finding-card card-{{ entry.finding.severity|lower }}">
 
-    <div class="footer">
-        OmniGov Compliance Intelligence Platform &mdash; Princess Sumaya University for Technology &mdash; Confidential
+        <div class="finding-card-header">
+            <div class="finding-card-name">{{ entry.finding.name }}</div>
+            <span class="sev-pill pill-{{ entry.finding.severity|lower }}">{{ entry.finding.severity }}</span>
+        </div>
+
+        <div class="finding-card-meta">
+            {% if entry.finding.cvss_score %}CVSS&nbsp;{{ entry.finding.cvss_score }}{% endif %}
+            {% if entry.finding.host %}&ensp;&middot;&ensp;Host:&nbsp;{{ entry.finding.host }}{% if entry.finding.port %}:{{ entry.finding.port }}{% endif %}{% endif %}
+            {% if entry.matched_controls %}
+                &ensp;&middot;&ensp;Controls:&nbsp;{% for control in entry.matched_controls %}<span class="ctrl-tag">{{ control.control_id }}</span>{% endfor %}
+            {% else %}
+                &ensp;&middot;&ensp;<span class="muted">No framework controls matched</span>
+            {% endif %}
+        </div>
+
+        {% if entry.executive_summary %}
+        <div class="finding-card-summary">{{ entry.executive_summary }}</div>
+        {% else %}
+        <div class="finding-card-summary muted">No executive summary available for this finding.</div>
+        {% endif %}
+
     </div>
+    {% endfor %}
+
 </body>
 </html>

@@ -18,7 +18,7 @@ This guide matches the known-good baseline validated in May 2026.
 - **In-memory channels** — no Redis needed
 - **Celery eager mode** — tasks run inline in development
 - **Detached scan recovery worker** — long scans recover safely after reloads
-- **GVM support** — mock mode or real socket mode
+- **GVM support** — via Unix socket
 
 Use one terminal for the app; GVM services run in the background when using real scans.
 
@@ -74,8 +74,6 @@ Open `.env` and fill in this value (leave everything else as-is):
 DJANGO_SECRET_KEY=any-random-string-at-least-50-characters-long
 ```
 
-Scans use mock data by default. AI correlation in development uses deterministic heuristics unless you explicitly enable provider-backed settings.
-
 ### 5 — Run database migrations
 
 ```bash
@@ -121,7 +119,7 @@ source /home/halsardiea/omnigov/.venv/bin/activate
 export DJANGO_SETTINGS_MODULE=omnigov.settings.development
 ```
 
-### 2 — (Real scans) start scanner services
+### 2 — Start scanner services
 
 ```bash
 sudo systemctl start gvmd ospd-openvas notus-scanner
@@ -184,49 +182,32 @@ Open: **http://localhost:8000**
 5. When status shows **Correlation Complete** — AI has mapped all findings to your selected frameworks
 6. **Reports** — download Executive PDF or Technical CSV
 
-> In mock mode the scan completes in ~10 seconds with simulated findings.
-
 ---
 
-## Running Tests
+## GVM Setup
 
-```bash
-cd /mnt/c/Users/halsa/Desktop/GP/GP2
-source /home/halsardiea/omnigov/.venv/bin/activate
-export DJANGO_SETTINGS_MODULE=omnigov.settings.development
-pytest tests/ -q
-```
+OmniGov connects to GVM via a Unix socket. Make sure your `.env` has the correct values:
 
-Use this to validate the current codebase after changes.
-
----
-
-## Real GVM Scans (optional)
-
-By default `GVM_USE_MOCK=True` — the full pipeline works without OpenVAS installed.
-
-To use a real GVM/OpenVAS scanner:
-
-**1. Edit `.env`:**
 ```
 GVM_USE_MOCK=False
 GVM_SOCKET_PATH=/run/gvmd/gvmd.sock
 GVM_ADMIN_USER=admin
 GVM_ADMIN_PASSWORD=admin
-AI_CORRELATION_MODEL=claude-haiku-4-5
 ```
 
-**2. Start GVM:**
+Start GVM services:
+
 ```bash
 sudo systemctl start gvmd ospd-openvas notus-scanner
 ```
 
-**3. Wait for the socket:**
+Wait for the socket to be ready:
+
 ```bash
 while [ ! -S /run/gvmd/gvmd.sock ]; do echo "waiting..."; sleep 3; done && echo "GVM ready"
 ```
 
-**4. Start the app normally** — it connects directly via the Unix socket.
+Then start the app normally — it connects directly via the socket.
 
 ## Close Everything (when pausing work)
 
@@ -266,8 +247,8 @@ python manage.py runserver 0.0.0.0:8000
 
 ## Troubleshooting
 
-**`[Errno 111] Connection refused` when starting a scan**
-The Anthropic API key in `.env` is causing AI correlation to attempt a network call. The `development.py` settings blank it out automatically — ensure you are running with `DJANGO_SETTINGS_MODULE=omnigov.settings.development`.
+**AI correlation not running**
+Leave `ANTHROPIC_API_KEY` blank in `.env` to use local heuristic matching only. Set it to a real Anthropic API key to enable Claude-backed correlation.
 
 **`OperationalError: no such table`**
 ```bash
