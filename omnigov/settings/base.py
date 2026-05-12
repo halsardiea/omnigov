@@ -235,7 +235,7 @@ GVM_SOCKET_PATH = config('GVM_SOCKET_PATH', default='/run/gvmd/gvmd.sock')
 # factory-default 'admin/admin' that every attacker knows.
 GVM_ADMIN_USER = config('GVM_ADMIN_USER', default='')
 GVM_ADMIN_PASSWORD = config('GVM_ADMIN_PASSWORD', default='')
-GVM_USE_MOCK = config('GVM_USE_MOCK', default=True, cast=bool)
+GVM_USE_MOCK = config('GVM_USE_MOCK', default=False, cast=bool)
 
 
 # Site
