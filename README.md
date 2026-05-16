@@ -1,7 +1,7 @@
 # OmniGov
 
 A vulnerability scanning and compliance management platform for security teams. OmniGov scans networks using Greenbone Vulnerability Manager, maps findings to industry frameworks, and generates actionable compliance reports.
-
+ 
 ## What it does
 
 - **Scan** — Run vulnerability scans against targets via GVM, with real-time status updates over WebSocket
